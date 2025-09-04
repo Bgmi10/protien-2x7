@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown, ShoppingCart, Dumbbell } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Menu, X, ChevronDown, ShoppingCart } from 'lucide-react';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {

@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+.header-blur {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background-color: rgb(255 255 255 / 0.8);
+}
+
+.header-blur-scrolled {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background-color: rgb(255 255 255 / 0.9);
+}

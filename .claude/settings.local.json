@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(timeout 10 npm run nd)",
+      "Bash(timeout 5 npm run nd)",
+      "Bash(curl:*)",
+      "WebFetch(domain:www.fitmeals.co.in)"
+    ],
+    "deny": []
+  }
+}

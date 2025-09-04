@@ -1,0 +1,51 @@
+import { motion } from 'framer-motion';
+import { Star } from 'lucide-react';
+import { testimonials } from '../utils/constants';
+
+export default function Testimonials() {
+  return (
+    <div className="pt-20 pb-16 min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16"
+        >
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Customer Success Stories</h1>
+          <p className="text-xl text-gray-600">Real transformations from our satisfied customers</p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {testimonials.map((testimonial, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow"
+            >
+              <div className="flex items-center space-x-3 mb-4">
+                <img
+                  src={testimonial.image}
+                  alt={testimonial.name}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+                <div>
+                  <h3 className="font-semibold text-gray-900">{testimonial.name}</h3>
+                  <p className="text-gray-600 text-sm">{testimonial.role}</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-1 mb-3">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 text-yellow-400" fill="currentColor" />
+                ))}
+              </div>
+              <p className="text-gray-700 leading-relaxed">"{testimonial.content}"</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

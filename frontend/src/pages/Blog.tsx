@@ -61,22 +61,20 @@ const blogPosts = [
 
 export default function Blog() {
   return (
-    <div className="pt-20 pb-16 min-h-screen bg-gray-50">
+    <div className="lg:pt-32 sm: pt-20 pb-8 sm:pb-16 min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-6 sm:mb-12 lg:mb-16"
         >
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 sm:mb-3 lg:mb-4">
             Nutrition & Fitness
-            <span className="block bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-              Blog
-            </span>
+            
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-[12px] sm:text-lg lg:text-xl text-gray-600 max-w-xs sm:max-w-2xl lg:max-w-3xl mx-auto px-2">
             Tips, guides, and insights on protein nutrition, fitness, and healthy living from our experts
           </p>
         </motion.div>
@@ -86,50 +84,50 @@ export default function Blog() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="mb-16"
+          className="mb-6 sm:mb-12 lg:mb-16"
         >
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div className="bg-white rounded-lg sm:rounded-2xl shadow-xl overflow-hidden">
             <div className="grid grid-cols-1 lg:grid-cols-2">
-              <div className="relative h-64 lg:h-auto">
+              <div className="relative h-32 sm:h-48 lg:h-auto">
                 <img
                   src={blogPosts[0].image}
                   alt={blogPosts[0].title}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute top-4 left-4">
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                <div className="absolute top-2 left-2 sm:top-3 sm:left-3 lg:top-4 lg:left-4">
+                  <span className="bg-blue-600 text-white px-2 py-1 sm:px-2.5 sm:py-1 lg:px-3 lg:py-1 rounded-full text-[8px] sm:text-xs lg:text-sm font-semibold">
                     Featured
                   </span>
                 </div>
               </div>
-              <div className="p-8 flex flex-col justify-center">
-                <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
-                  <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-medium">
+              <div className="p-4 sm:p-6 lg:p-8 flex flex-col justify-center">
+                <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4 text-[8px] sm:text-xs lg:text-sm text-gray-500 mb-2 sm:mb-3 lg:mb-4">
+                  <span className="bg-blue-100 text-blue-600 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[8px] sm:text-xs font-medium">
                     {blogPosts[0].category}
                   </span>
                   <div className="flex items-center space-x-1">
-                    <Calendar className="h-4 w-4" />
+                    <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
                     <span>{new Date(blogPosts[0].date).toLocaleDateString()}</span>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <Clock className="h-4 w-4" />
+                    <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
                     <span>{blogPosts[0].readTime}</span>
                   </div>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                <h2 className="text-sm sm:text-xl lg:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 lg:mb-4">
                   {blogPosts[0].title}
                 </h2>
-                <p className="text-gray-600 mb-6 leading-relaxed">
+                <p className="text-[10px] sm:text-sm lg:text-base text-gray-600 mb-3 sm:mb-4 lg:mb-6 leading-relaxed">
                   {blogPosts[0].excerpt}
                 </p>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <User className="h-5 w-5 text-gray-400" />
-                    <span className="text-sm text-gray-600">{blogPosts[0].author}</span>
+                  <div className="flex items-center space-x-2 sm:space-x-3">
+                    <User className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-gray-400" />
+                    <span className="text-[8px] sm:text-xs lg:text-sm text-gray-600">{blogPosts[0].author}</span>
                   </div>
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold flex items-center space-x-2 transition-colors">
+                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 sm:px-4 sm:py-2 lg:px-6 lg:py-2 rounded-lg font-semibold flex items-center space-x-1 sm:space-x-2 transition-colors text-[8px] sm:text-xs lg:text-sm">
                     <span>Read More</span>
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
                   </button>
                 </div>
               </div>
@@ -138,56 +136,56 @@ export default function Blog() {
         </motion.div>
 
         {/* Blog Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {blogPosts.slice(1).map((post, index) => (
             <motion.article
               key={post.id}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: (index + 1) * 0.1 }}
-              className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group cursor-pointer"
+              className="bg-white rounded-lg sm:rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group cursor-pointer"
             >
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative h-24 sm:h-36 lg:h-48 overflow-hidden">
                 <img
                   src={post.image}
                   alt={post.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
-                <div className="absolute top-3 left-3">
-                  <span className="bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-semibold text-gray-800">
+                <div className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 lg:top-3 lg:left-3">
+                  <span className="bg-white/90 backdrop-blur-sm px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[8px] sm:text-xs font-semibold text-gray-800">
                     {post.category}
                   </span>
                 </div>
               </div>
               
-              <div className="p-6">
-                <div className="flex items-center space-x-4 text-xs text-gray-500 mb-3">
+              <div className="p-3 sm:p-4 lg:p-6">
+                <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4 text-[8px] sm:text-xs text-gray-500 mb-2 sm:mb-3">
                   <div className="flex items-center space-x-1">
-                    <Calendar className="h-3 w-3" />
+                    <Calendar className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                     <span>{new Date(post.date).toLocaleDateString()}</span>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <Clock className="h-3 w-3" />
+                    <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                     <span>{post.readTime}</span>
                   </div>
                 </div>
                 
-                <h3 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">
+                <h3 className="text-[10px] sm:text-sm lg:text-lg font-bold text-gray-900 mb-2 sm:mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">
                   {post.title}
                 </h3>
                 
-                <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                <p className="text-[8px] sm:text-xs lg:text-sm text-gray-600 mb-2 sm:mb-3 lg:mb-4 line-clamp-3">
                   {post.excerpt}
                 </p>
                 
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <User className="h-4 w-4 text-gray-400" />
-                    <span className="text-xs text-gray-600">{post.author}</span>
+                  <div className="flex items-center space-x-1 sm:space-x-2">
+                    <User className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400" />
+                    <span className="text-[8px] sm:text-xs text-gray-600">{post.author}</span>
                   </div>
-                  <button className="text-blue-600 hover:text-blue-700 font-semibold text-sm flex items-center space-x-1 transition-colors">
+                  <button className="text-blue-600 hover:text-blue-700 font-semibold text-[8px] sm:text-xs lg:text-sm flex items-center space-x-1 transition-colors">
                     <span>Read</span>
-                    <ArrowRight className="h-3 w-3" />
+                    <ArrowRight className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                   </button>
                 </div>
               </div>
@@ -200,22 +198,22 @@ export default function Blog() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="mt-16"
+          className="mt-8 sm:mt-12 lg:mt-16"
         >
-          <div className="bg-gradient-to-r from-blue-600 to-green-600 rounded-2xl p-8 text-center text-white">
-            <h3 className="text-3xl font-bold mb-4">
+          <div className="bg-gradient-to-r from-blue-600 to-green-600 rounded-lg sm:rounded-2xl p-4 sm:p-6 lg:p-8 text-center text-white">
+            <h3 className="text-lg sm:text-2xl lg:text-3xl font-bold mb-2 sm:mb-3 lg:mb-4">
               Get Weekly Nutrition Tips
             </h3>
-            <p className="text-lg mb-6 opacity-90">
+            <p className="text-[10px] sm:text-base lg:text-lg mb-3 sm:mb-4 lg:mb-6 opacity-90">
               Subscribe to our newsletter for the latest protein and fitness insights
             </p>
-            <div className="flex flex-col sm:flex-row max-w-md mx-auto">
+            <div className="flex flex-col sm:flex-row max-w-xs sm:max-w-sm lg:max-w-md mx-auto">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-l-lg sm:rounded-r-none rounded-r-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-white/50"
+                className="flex-1 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-4 lg:py-3 rounded-l-lg sm:rounded-r-none rounded-r-lg text-gray-900 text-[10px] sm:text-sm lg:text-base focus:outline-none focus:ring-2 focus:ring-white/50"
               />
-              <button className="bg-white text-blue-600 hover:bg-gray-100 px-6 py-3 rounded-r-lg sm:rounded-l-none rounded-l-lg font-semibold transition-colors mt-2 sm:mt-0">
+              <button className="bg-white text-blue-600 hover:bg-gray-100 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-6 lg:py-3 rounded-r-lg sm:rounded-l-none rounded-l-lg font-semibold text-[10px] sm:text-sm lg:text-base transition-colors mt-2 sm:mt-0">
                 Subscribe
               </button>
             </div>

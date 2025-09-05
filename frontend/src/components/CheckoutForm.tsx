@@ -57,7 +57,7 @@ export default function CheckoutForm({ product, onClose }: CheckoutFormProps) {
         key: orderData.key_id,
         amount: orderData.amount,
         currency: orderData.currency,
-        name: 'Protein2x4 Shop',
+        name: 'protein2x7',
         description: `Subscription: ${product.name}`,
         order_id: orderData.order_id,
         handler: async function (response: any) {

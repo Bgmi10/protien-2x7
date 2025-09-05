@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, ChevronDown, ShoppingCart } from 'lucide-react';
 
@@ -6,6 +6,21 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  //@ts-ignore
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = (dropdown: string) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setActiveDropdown(dropdown);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setActiveDropdown(null);
+    }, 100);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,10 +52,10 @@ export default function Header() {
       WebkitBackdropFilter: 'blur(12px)'
     }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between lg:h-22 h-18">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <img src="/assets/logo.png" alt="" className='w-40'/>
+            <img src="/assets/logo1.png" alt="" className='w-10 sm:w-16 lg:w-20'/>
           </Link>
 
           {/* Desktop Navigation */}
@@ -48,18 +63,18 @@ export default function Header() {
             {/* Subscription Plans Dropdown */}
             <div className="relative">
               <button
-                onMouseEnter={() => setActiveDropdown('plans')}
-                onMouseLeave={() => setActiveDropdown(null)}
-                className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                onMouseEnter={() => handleMouseEnter('plans')}
+                onMouseLeave={handleMouseLeave}
+                className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 font-medium transition-colors py-2"
               >
                 <span>Meal Subscriptions</span>
                 <ChevronDown className="h-4 w-4" />
               </button>
               {activeDropdown === 'plans' && (
                 <div
-                  onMouseEnter={() => setActiveDropdown('plans')}
-                  onMouseLeave={() => setActiveDropdown(null)}
-                  className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-xl py-2"
+                  onMouseEnter={() => handleMouseEnter('plans')}
+                  onMouseLeave={handleMouseLeave}
+                  className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-xl py-2"
                 >
                   {subscriptionPlans.map((plan) => (
                     <Link
@@ -77,18 +92,18 @@ export default function Header() {
             {/* Products Dropdown */}
             <div className="relative">
               <button
-                onMouseEnter={() => setActiveDropdown('products')}
-                onMouseLeave={() => setActiveDropdown(null)}
-                className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                onMouseEnter={() => handleMouseEnter('products')}
+                onMouseLeave={handleMouseLeave}
+                className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 font-medium transition-colors py-2"
               >
                 <span>Our Meals</span>
                 <ChevronDown className="h-4 w-4" />
               </button>
               {activeDropdown === 'products' && (
                 <div
-                  onMouseEnter={() => setActiveDropdown('products')}
-                  onMouseLeave={() => setActiveDropdown(null)}
-                  className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-2"
+                  onMouseEnter={() => handleMouseEnter('products')}
+                  onMouseLeave={handleMouseLeave}
+                  className="absolute top-full left-0 mt-1 w-56 bg-white rounded-lg shadow-xl py-2"
                 >
                   {meals.map((meal) => (
                     <Link
@@ -135,7 +150,7 @@ export default function Header() {
             </button>
             <Link
               to="/subscription-plans"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-semibold transition-all transform hover:scale-105"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 sm:px-4 sm:py-2 lg:px-5 lg:py-2 rounded-lg font-semibold text-xs sm:text-sm lg:text-base transition-all transform hover:scale-105"
             >
               Choose Your Plan
             </Link>

@@ -226,7 +226,7 @@ export const testimonials = [
     name: "Neha Gupta",
     role: "CrossFit Athlete",
     image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200",
-    content: "The convenience of monthly deliveries and quality products make Protein2x4 unbeatable.",
+    content: "The convenience of monthly deliveries and quality products make protein2x7 unbeatable.",
     rating: 5
   }
 ];

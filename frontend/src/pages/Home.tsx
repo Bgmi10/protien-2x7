@@ -1,15 +1,13 @@
 import Hero from '../components/home/Hero';
-import Features from '../components/home/Features';
+import WhyProtein2x7 from '../components/home/WhyProtein2x7';
 import SubscriptionPlans from '../components/home/SubscriptionPlans';
-import Testimonials from '../components/home/Testimonials';
 
 export default function Home() {
   return (
     <div className="pt-16"> {/* Account for fixed header */}
       <Hero />
-      <Features />
+      <WhyProtein2x7 />
       <SubscriptionPlans />
-      <Testimonials />
     </div>
   );
 }

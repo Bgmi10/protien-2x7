@@ -65,13 +65,13 @@ export default function WhyProtein2x7() {
           viewport={{ once: true }}
           className="text-center mb-6 sm:mb-12 lg:mb-16"
         >
-          <h2 className="text-xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 sm:mb-4 lg:mb-6">
+          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 sm:mb-4 lg:mb-6">
             Why
             <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
               {' '}protein2x7?
             </span>
           </h2>
-          <p className="text-[12px] sm:text-lg lg:text-xl text-gray-700 max-w-xs sm:max-w-2xl lg:max-w-3xl mx-auto font-medium px-2">
+          <p className="text-sm sm:text-lg lg:text-xl text-gray-700 max-w-xs sm:max-w-2xl lg:max-w-3xl mx-auto font-medium px-2">
             At protein2x7, we believe fitness begins with food — and quality is our promise.
           </p>
         </motion.div>
@@ -94,10 +94,10 @@ export default function WhyProtein2x7() {
                 </div>
                 
                 {/* Content */}
-                <h3 className="text-sm sm:text-lg lg:text-xl font-bold text-gray-900 mb-1 sm:mb-2 lg:mb-3">
+                <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 mb-1 sm:mb-2 lg:mb-3">
                   {feature.title}
                 </h3>
-                <p className="text-[10px] sm:text-base lg:text-base text-gray-600 leading-relaxed">
+                <p className="text-xs sm:text-base lg:text-base text-gray-600 leading-relaxed">
                   {feature.description}
                 </p>
               </div>
@@ -115,7 +115,7 @@ export default function WhyProtein2x7() {
         >
           <div className="inline-flex items-center space-x-1 sm:space-x-2 bg-gradient-to-r from-blue-50 to-green-50 px-3 py-2 sm:px-4 sm:py-2 lg:px-6 lg:py-3 rounded-full">
             <Shield className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-blue-600" />
-            <span className="text-[10px] sm:text-sm lg:text-base text-gray-800 font-medium">
+            <span className="text-xs sm:text-sm lg:text-base text-gray-800 font-medium">
               Every meal crafted with care, delivered with trust.
             </span>
           </div>

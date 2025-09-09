@@ -112,7 +112,7 @@ export default function Products() {
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
                 <div className="absolute top-3 right-3">
-                  <div className="bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-semibold text-gray-800">
+                  <div className="bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-sm font-semibold text-gray-800">
                     {product.weight}
                   </div>
                 </div>
@@ -132,7 +132,7 @@ export default function Products() {
                   <div className="mb-4">
                     <div className="flex flex-wrap gap-1">
                       {product.features.slice(0, 2).map((feature, i) => (
-                        <span key={i} className="bg-blue-50 text-blue-600 px-2 py-1 rounded-full text-xs font-medium">
+                        <span key={i} className="bg-blue-50 text-blue-600 px-2 py-1 rounded-full text-sm font-medium">
                           {feature}
                         </span>
                       ))}
@@ -148,7 +148,7 @@ export default function Products() {
                       {[...Array(5)].map((_, i) => (
                         <Star key={i} className="h-3 w-3 text-yellow-400" fill="currentColor" />
                       ))}
-                      <span className="text-xs text-gray-500 ml-1">(4.8)</span>
+                      <span className="text-sm text-gray-500 ml-1">(4.8)</span>
                     </div>
                   </div>
                   <button className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors">

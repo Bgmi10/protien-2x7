@@ -39,7 +39,7 @@ export default function Testimonials() {
               {' '}Our Community
             </span>
           </h2>
-          <p className="text-[12px] sm:text-lg lg:text-xl text-gray-600 max-w-xs sm:max-w-2xl lg:max-w-3xl mx-auto px-2">
+          <p className="text-sm sm:text-lg lg:text-xl text-gray-600 max-w-xs sm:max-w-2xl lg:max-w-3xl mx-auto px-2">
             Real results from real people who transformed their bodies with protein2x7
           </p>
         </motion.div>
@@ -78,16 +78,16 @@ export default function Testimonials() {
               </div>
 
               {/* Testimonial Text */}
-              <blockquote className="text-sm sm:text-lg md:text-xl lg:text-2xl text-gray-800 leading-relaxed mb-3 sm:mb-4 lg:mb-6 italic">
+              <blockquote className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-800 leading-relaxed mb-3 sm:mb-4 lg:mb-6 italic">
                 "{testimonials[currentIndex].content}"
               </blockquote>
 
               {/* Author Info */}
               <div>
-                <h4 className="text-sm sm:text-lg lg:text-xl font-bold text-gray-900">
+                <h4 className="text-lg sm:text-lg lg:text-xl font-bold text-gray-900">
                   {testimonials[currentIndex].name}
                 </h4>
-                <p className="text-[10px] sm:text-sm lg:text-base text-blue-600 font-medium">
+                <p className="text-sm sm:text-sm lg:text-base text-blue-600 font-medium">
                   {testimonials[currentIndex].role}
                 </p>
               </div>
@@ -148,8 +148,8 @@ export default function Testimonials() {
                   className="w-10 h-10 lg:w-12 lg:h-12 rounded-full object-cover"
                 />
                 <div>
-                  <h4 className="font-semibold text-gray-900 text-xs lg:text-sm">{testimonial.name}</h4>
-                  <p className="text-gray-600 text-[10px] lg:text-xs">{testimonial.role}</p>
+                  <h4 className="font-semibold text-gray-900 text-sm lg:text-sm">{testimonial.name}</h4>
+                  <p className="text-gray-600 text-sm lg:text-xs">{testimonial.role}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-0.5 lg:space-x-1 mb-1.5 lg:mb-2">
@@ -157,7 +157,7 @@ export default function Testimonials() {
                   <Star key={i} className="h-2.5 w-2.5 lg:h-3 lg:w-3 text-yellow-400" fill="currentColor" />
                 ))}
               </div>
-              <p className="text-gray-700 text-xs lg:text-sm leading-relaxed line-clamp-3">
+              <p className="text-gray-700 text-sm lg:text-sm leading-relaxed line-clamp-3">
                 "{testimonial.content}"
               </p>
             </motion.div>

@@ -16,7 +16,7 @@ export default function FAQ() {
           className="text-center mb-6 sm:mb-12 lg:mb-16"
         >
           <h1 className="text-xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-3 lg:mb-4">Frequently Asked Questions</h1>
-          <p className="text-[12px] sm:text-lg lg:text-xl text-gray-600 px-2">Get answers to common questions about our products and services</p>
+          <p className="text-sm sm:text-lg lg:text-xl text-gray-600 px-2">Get answers to common questions about our products and services</p>
         </motion.div>
 
         <div className="space-y-2 sm:space-y-3 lg:space-y-4">
@@ -32,14 +32,14 @@ export default function FAQ() {
                 onClick={() => setOpenFaq(openFaq === index ? null : index)}
                 className="w-full text-left p-3 sm:p-4 lg:p-6 flex items-center justify-between hover:bg-gray-50 transition-colors"
               >
-                <h3 className="text-[10px] sm:text-base lg:text-lg font-semibold text-gray-900 pr-2">{faq.question}</h3>
+                <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 pr-2">{faq.question}</h3>
                 <ChevronDown className={`h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-gray-500 transition-transform flex-shrink-0 ${
                   openFaq === index ? 'transform rotate-180' : ''
                 }`} />
               </button>
               {openFaq === index && (
                 <div className="px-3 pb-3 sm:px-4 sm:pb-4 lg:px-6 lg:pb-6">
-                  <p className="text-[10px] sm:text-sm lg:text-base text-gray-600 leading-relaxed">{faq.answer}</p>
+                  <p className="text-sm sm:text-sm lg:text-base text-gray-600 leading-relaxed">{faq.answer}</p>
                 </div>
               )}
             </motion.div>

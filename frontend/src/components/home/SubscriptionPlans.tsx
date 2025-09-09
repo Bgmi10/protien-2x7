@@ -22,13 +22,13 @@ export default function SubscriptionPlans() {
           viewport={{ once: true }}
           className="text-center mb-6 sm:mb-12 lg:mb-16"
         >
-          <h2 className="text-xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 sm:mb-3 lg:mb-4">
+          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 sm:mb-3 lg:mb-4">
             Choose Your Perfect
             <span className="block bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
               Subscription Plan
             </span>
           </h2>
-          <p className="text-[12px] sm:text-lg lg:text-xl text-gray-600 max-w-xs sm:max-w-2xl lg:max-w-3xl mx-auto px-2">
+          <p className="text-sm sm:text-lg lg:text-xl text-gray-600 max-w-xs sm:max-w-2xl lg:max-w-3xl mx-auto px-2">
             Expertly crafted supplement combinations designed for your specific fitness goals
           </p>
         </motion.div>
@@ -56,7 +56,7 @@ export default function SubscriptionPlans() {
                   
                   {/* Most Popular Badge */}
                   {index === 0 && (
-                    <div className="absolute top-1 right-1 sm:top-3 sm:right-3 lg:top-4 lg:right-4 bg-yellow-500 text-white px-1 py-0.5 sm:px-2 sm:py-1 lg:px-3 lg:py-1 rounded-full text-[8px] sm:text-xs lg:text-sm font-semibold flex items-center space-x-0.5 sm:space-x-1">
+                    <div className="absolute top-1 right-1 sm:top-3 sm:right-3 lg:top-4 lg:right-4 bg-yellow-500 text-white px-1 py-0.5 sm:px-2 sm:py-1 lg:px-3 lg:py-1 rounded-full text-xs sm:text-xs lg:text-sm font-semibold flex items-center space-x-0.5 sm:space-x-1">
                       <Star className="h-2 w-2 sm:h-3 sm:w-3 lg:h-4 lg:w-4" fill="currentColor" />
                       <span className="hidden sm:inline">Most Popular</span>
                       <span className="sm:hidden">Popular</span>
@@ -65,14 +65,14 @@ export default function SubscriptionPlans() {
 
                   {/* Plan Title */}
                   <div className="absolute bottom-1 left-1 sm:bottom-3 sm:left-3 lg:bottom-4 lg:left-4 text-white">
-                    <h3 className="text-[10px] sm:text-base lg:text-xl font-bold">{plan.name}</h3>
-                    <p className="text-[8px] sm:text-xs lg:text-sm opacity-90">{plan.tagline}</p>
+                    <h3 className="text-xs sm:text-base lg:text-xl font-bold">{plan.name}</h3>
+                    <p className="text-xs sm:text-xs lg:text-sm opacity-90">{plan.tagline}</p>
                   </div>
                 </div>
 
                 {/* Plan Content */}
                 <div className="p-2 sm:p-4 lg:p-6">
-                  <p className="text-[10px] sm:text-sm lg:text-base text-gray-600 mb-2 sm:mb-3 lg:mb-4">{plan.description}</p>
+                  <p className="text-xs sm:text-sm lg:text-base text-gray-600 mb-2 sm:mb-3 lg:mb-4">{plan.description}</p>
 
                   {/* Pricing */}
                   <div className="mb-2 sm:mb-3 lg:mb-4">
@@ -80,9 +80,9 @@ export default function SubscriptionPlans() {
                       <span className="text-sm sm:text-2xl lg:text-3xl font-bold text-gray-900">
                         ₹{plan.pricing.monthly}
                       </span>
-                      <span className="text-[8px] sm:text-sm lg:text-base text-gray-500">/month</span>
+                      <span className="text-xs sm:text-sm lg:text-base text-gray-500">/month</span>
                     </div>
-                    <p className="text-[8px] sm:text-xs lg:text-sm text-green-600 font-medium">
+                    <p className="text-xs sm:text-xs lg:text-sm text-green-600 font-medium">
                       Save up to 20% on longer plans
                     </p>
                   </div>
@@ -92,7 +92,7 @@ export default function SubscriptionPlans() {
                     {plan.benefits.slice(0, 3).map((benefit, i) => (
                       <div key={i} className="flex items-center space-x-1 sm:space-x-2 mb-1 sm:mb-1.5 lg:mb-2">
                         <Check className="h-2 w-2 sm:h-3 sm:w-3 lg:h-4 lg:w-4 text-green-500 flex-shrink-0" />
-                        <span className="text-[8px] sm:text-xs lg:text-sm text-gray-700">{benefit}</span>
+                        <span className="text-xs sm:text-xs lg:text-sm text-gray-700">{benefit}</span>
                       </div>
                     ))}
                   </div>
@@ -102,7 +102,7 @@ export default function SubscriptionPlans() {
                     to={`/subscription-plans/${plan.id}`}
                     className={`w-full bg-gradient-to-r ${colorMap[plan.color as keyof typeof colorMap]} text-white py-1.5 sm:py-2 lg:py-3 rounded-md sm:rounded-lg font-semibold flex items-center justify-center space-x-1 sm:space-x-2 hover:shadow-lg transition-all duration-300 group`}
                   >
-                    <span className="text-[8px] sm:text-sm lg:text-base">View Details</span>
+                    <span className="text-xs sm:text-sm lg:text-base">View Details</span>
                     <ArrowRight className="h-2 w-2 sm:h-3 sm:w-3 lg:h-4 lg:w-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
@@ -121,7 +121,7 @@ export default function SubscriptionPlans() {
         >
           <Link
             to="/subscription-plans"
-            className="inline-flex items-center space-x-1 sm:space-x-2 bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 sm:px-6 sm:py-3 lg:px-8 lg:py-4 rounded-full font-bold text-[10px] sm:text-base lg:text-lg transition-all duration-300 transform hover:scale-105"
+            className="inline-flex items-center space-x-1 sm:space-x-2 bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 sm:px-6 sm:py-3 lg:px-8 lg:py-4 rounded-full font-bold text-sm sm:text-base lg:text-lg transition-all duration-300 transform hover:scale-105"
           >
             <span>Compare All Plans</span>
             <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />

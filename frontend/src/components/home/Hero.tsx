@@ -15,7 +15,7 @@ export default function Hero() {
         />
       </div>
       {/* Content */}
-      <div className="relative z-20 max-w-7xl mx-auto sm: px-6 lg:px-8 text-center text-white sm: mt-12 lg:mt-0">
+      <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white mt-12 landscape:mt-4 sm:mt-12 lg:mt-0">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -29,7 +29,7 @@ export default function Hero() {
             className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full lg:mb-6 mb-3"
           >
             <Star className="lg:h-5 lg:w-5 w-[11px] h-[11px] text-yellow-400" />
-            <span className="lg:text-sm text-[8px] font-semibold">Fresh Protein Meals, Twice a Day. Seven Days a Week.</span>
+            <span className="lg:text-sm text-xs font-semibold">Fresh Protein Meals, Twice a Day. Seven Days a Week.</span>
           </motion.div>
 
           {/* Main Heading */}
@@ -37,7 +37,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.6 }}
-            className="text-xl sm:text-6xl lg:text-7xl font-bold lg:mb-6 mb-4"
+            className="text-2xl sm:text-6xl lg:text-7xl font-bold lg:mb-6 mb-4"
           >
             <span className="block bg-gradient-to-r from-blue-400 to-green-400 bg-clip-text text-transparent">
               Protein-Rich Meals, Anytime.
@@ -52,7 +52,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.8 }}
-            className="text-[10px] sm:text-2xl text-gray-200 mb-4 max-w-xl mx-auto"
+            className="text-sm sm:text-2xl text-gray-200 mb-4 max-w-xl mx-auto"
           >
             Wholesome, hygienic, and customized protein meals to match your fitness goals — delivered fresh, always.
           </motion.p>
@@ -66,7 +66,7 @@ export default function Hero() {
           >
             <Link
               to="/subscription-plans"
-              className="sm: mb-10 lg:mb-0 group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white lg:px-8 lg:py-4 px-4 py-1 rounded-full font-bold lg:text-lg sm: text-xs transition-all duration-300 transform hover:scale-105 shadow-2xl flex items-center space-x-2"
+              className="sm: mb-12 lg:mb-0 group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white lg:px-8 lg:py-4 px-4 py-2 rounded-full font-bold lg:text-lg text-sm transition-all duration-300 transform hover:scale-105 shadow-2xl flex items-center space-x-2"
             >
               <span>Choose Your Plan</span>
               <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />

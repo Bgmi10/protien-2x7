@@ -233,23 +233,27 @@ export const testimonials = [
 
 export const faqs = [
   {
-    question: "How do subscription plans work?",
-    answer: "Choose your plan, select duration (monthly/quarterly/half-yearly), and get premium supplements delivered to your doorstep. Cancel or modify anytime."
+    question: "Is the food prepared hygienically?",
+    answer: "Yes. We follow strict government food safety standards and our own hygiene methods. From washing raw ingredients to sanitizing utensils and storing food at the right temperature, everything is handled with care. Our trained team ensures your meals are always safe and hygienic."
   },
   {
-    question: "Are the products authentic?",
-    answer: "Yes! All our products are 100% authentic, imported directly from certified manufacturers with quality certificates."
+    question: "Do you use good-quality raw materials?",
+    answer: "Absolutely. We source all ingredients only from certified and trusted vendors to make sure every meal is fresh and of top quality."
   },
   {
-    question: "Can I customize my subscription?",
-    answer: "Currently, we offer pre-designed plans optimized for specific goals. Custom plans coming soon!"
+    question: "How do you ensure the protein, like Paneer, is pure and not adulterated?",
+    answer: "Our Paneer and protein products come from well-known, established brands that maintain strict quality standards. They would never compromise their reputation with adulteration."
   },
   {
-    question: "What's your return policy?",
-    answer: "We offer a 7-day return policy for unopened products. Quality issues are covered under our satisfaction guarantee."
+    question: "What if I don't like the food?",
+    answer: "We offer a trial package so you can try before committing. If you're happy, you can continue with our regular meal plans. We're confident that the same quality will be maintained in every meal. For concerns, you can always email us, and we'll help."
   },
   {
-    question: "How fast is delivery?",
-    answer: "We deliver within 2-3 business days in metro cities and 4-5 days in other areas across India."
+    question: "Can I pause or reschedule my meals if I'm traveling?",
+    answer: "Yes, you can. Just send us an email, and we'll adjust your delivery calendar to suit your schedule."
+  },
+  {
+    question: "Can I visit the kitchen to see how food is prepared?",
+    answer: "Yes! You can book a visit by emailing us. We'll reserve a slot for you to: • Watch the food preparation process. • Enjoy a fresh meal at our private dining space. It would be our pleasure to host you."
   }
 ];

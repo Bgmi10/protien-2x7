@@ -1,9 +1,13 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Check, Star } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowRight, Check, Star, BookOpen } from 'lucide-react';
 import { subscriptionPlans } from '../../utils/constants';
+import SampleMenuModal from '../SampleMenuModal';
 
 export default function SubscriptionPlans() {
+  const [showSampleMenu, setShowSampleMenu] = useState(false);
+  
   const colorMap = {
     blue: 'from-blue-500 to-blue-700',
     green: 'from-green-500 to-green-700',
@@ -31,6 +35,13 @@ export default function SubscriptionPlans() {
           <p className="text-sm sm:text-lg lg:text-xl text-gray-600 max-w-xs sm:max-w-2xl lg:max-w-3xl mx-auto px-2">
             Expertly crafted supplement combinations designed for your specific fitness goals
           </p>
+          <button
+            onClick={() => setShowSampleMenu(true)}
+            className="mt-4 inline-flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 transform hover:scale-105"
+          >
+            <BookOpen className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span>View Sample Menu</span>
+          </button>
         </motion.div>
 
         {/* Plans Grid */}
@@ -128,6 +139,9 @@ export default function SubscriptionPlans() {
           </Link>
         </motion.div>
       </div>
+      
+      {/* Sample Menu Modal */}
+      <SampleMenuModal isOpen={showSampleMenu} onClose={() => setShowSampleMenu(false)} />
     </section>
   );
 }

@@ -1,16 +1,28 @@
 {
-  "name": "my-app",
+  "name": "protein2x7-api",
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify",
-    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+    "deploy:dev": "wrangler deploy --env development",
+    "deploy:prod": "wrangler deploy --env production",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "db:create": "wrangler d1 create protein2x7-db",
+    "db:create:dev": "wrangler d1 create protein2x7-db-dev",
+    "db:create:prod": "wrangler d1 create protein2x7-db-prod",
+    "db:migrate": "wrangler d1 migrations apply protein2x7-db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply protein2x7-db --remote",
+    "db:execute": "wrangler d1 execute protein2x7-db --local --file",
+    "db:execute:remote": "wrangler d1 execute protein2x7-db --remote --file"
   },
   "dependencies": {
-    "hono": "^4.9.6"
+    "bcryptjs": "^2.4.3",
+    "hono": "^4.9.6",
+    "jose": "^5.10.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250903.0",
+    "@types/bcryptjs": "^2.4.6",
     "wrangler": "^4.4.0"
   }
 }

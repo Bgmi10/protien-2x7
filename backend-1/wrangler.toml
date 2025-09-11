@@ -1,0 +1,50 @@
+name = "protein2x7-api"
+main = "src/index.ts"
+compatibility_date = "2025-09-03"
+
+# Worker configuration
+[vars]
+ENVIRONMENT = "development"
+API_VERSION = "v1"
+JWT_SECRET = "your-super-secret-jwt-key-change-in-production-2024"
+
+# D1 Database configuration
+[[d1_databases]]
+binding = "DB" # This is the binding name you'll use in your code
+database_name = "protein2x7-db"
+database_id = "" # You'll need to add the database ID after creating it
+
+# Development environment specific configuration
+[env.development]
+name = "protein2x7-api-dev"
+vars = { ENVIRONMENT = "development" }
+
+[[env.development.d1_databases]]
+binding = "DB"
+database_name = "protein2x7-db-dev"
+database_id = "" # Development database ID
+
+# Production environment specific configuration
+[env.production]
+name = "protein2x7-api-prod"
+vars = { ENVIRONMENT = "production" }
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "protein2x7-db-prod"
+database_id = "" # Production database ID
+
+# Optional: KV namespace for caching
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = ""
+
+# Optional: R2 bucket for file storage
+# [[r2_buckets]]
+# binding = "STORAGE"
+# bucket_name = "protein2x7-storage"
+
+# Observability
+[observability]
+enabled = true
+head_sampling_rate = 1

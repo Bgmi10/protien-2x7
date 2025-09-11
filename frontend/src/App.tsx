@@ -14,6 +14,10 @@ import Testimonials from './pages/Testimonials';
 import Contact from './pages/Contact';
 import ShippingPolicy from './pages/ShippingPolicy';
 import ReturnPolicy from './pages/ReturnPolicy';
+import MealPlansAdmin from './pages/admin/MealPlansAdmin';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminProfile from './pages/admin/AdminProfile';
+import AdminProtectedRoute from './components/AdminProtectedRoute';
 
 function App() {
   return (
@@ -35,6 +39,13 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/shipping-policy" element={<ShippingPolicy />} />
           <Route path="/return-policy" element={<ReturnPolicy />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+
+          <Route path="/admin" element={<AdminProtectedRoute />}>
+            <Route path="profile" element={<AdminProfile />} />
+            <Route path="meal-plans" element={<MealPlansAdmin />} />
+          </Route>
+
         </Routes>
       </Layout>
     </Router>

@@ -4,9 +4,10 @@ import { Env } from '../types/env';
  * Database utility class for D1 operations
  */
 export class DatabaseClient {
-  private db: D1Database;
+  private db: any; // D1Database type from Cloudflare Workers
   
   constructor(env: Env) {
+  console.log("DB binding at startup:", env.DB);
     this.db = env.DB;
   }
   
@@ -35,7 +36,7 @@ export class DatabaseClient {
   /**
    * Execute a command (INSERT, UPDATE, DELETE) and return affected rows
    */
-  async execute(sql: string, params?: unknown[]): Promise<D1Result> {
+  async execute(sql: string, params?: unknown[]): Promise<any> {
     try {
       const statement = params ? this.db.prepare(sql).bind(...params) : this.db.prepare(sql);
       return await statement.run();
@@ -48,7 +49,7 @@ export class DatabaseClient {
   /**
    * Execute multiple statements in a transaction
    */
-  async transaction(statements: Array<{ sql: string; params?: unknown[] }>): Promise<D1Result[]> {
+  async transaction(statements: Array<{ sql: string; params?: unknown[] }>): Promise<any[]> {
     try {
       const prepared = statements.map(({ sql, params }) => 
         params ? this.db.prepare(sql).bind(...params) : this.db.prepare(sql)
@@ -63,7 +64,7 @@ export class DatabaseClient {
   /**
    * Get the raw D1Database instance for advanced operations
    */
-  getRawDb(): D1Database {
+  getRawDb(): any {
     return this.db;
   }
 }

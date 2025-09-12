@@ -196,6 +196,9 @@ export const products: Product[] = [
   }
 ];
 
+export const API_URL = import.meta.env.VITE_BACKEND_BASE_URL;
+
+
 export const testimonials = [
   {
     id: 1,

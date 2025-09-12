@@ -1,21 +1,19 @@
--- Add authentication and role fields to users table
+-- Add role column
+ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user' CHECK(role IN ('user', 'admin'));
 
--- Add role column if it doesn't exist
-ALTER TABLE users ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'user' CHECK(role IN ('user', 'admin'));
-
--- Add is_active column for account status
-ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT 1;
+-- Add is_active column
+ALTER TABLE users ADD COLUMN is_active BOOLEAN DEFAULT 1;
 
 -- Add last_login column
-ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login DATETIME;
+ALTER TABLE users ADD COLUMN last_login DATETIME;
 
 -- Add email_verified column
-ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT 0;
+ALTER TABLE users ADD COLUMN email_verified BOOLEAN DEFAULT 0;
 
--- Add refresh token column for JWT refresh
-ALTER TABLE users ADD COLUMN IF NOT EXISTS refresh_token TEXT;
+-- Add refresh token column
+ALTER TABLE users ADD COLUMN refresh_token TEXT;
 
--- Create sessions table for managing user sessions
+-- Create sessions table
 CREATE TABLE IF NOT EXISTS sessions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,

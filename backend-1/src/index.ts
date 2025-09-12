@@ -12,18 +12,19 @@ const app = new Hono<{ Bindings: Env }>();
 // Middleware
 app.use('*', logger());
 app.use('*', cors({
-  origin: (origin) => {
-    // Allow requests from these origins
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'http://localhost:3000',
-      'https://protein2x7.com'
-    ];
-    return origin ? allowedOrigins.includes(origin) : true;
-  },
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:3000',
+    'http://127.0.0.1:5173',
+    'https://protein2x7.com',
+    'https://www.protein2x7.com'
+  ],
   credentials: true, // This is crucial for cookies to work
-  allowHeaders: ['Content-Type', 'Authorization'],
+  allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Set-Cookie'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  exposeHeaders: ['Set-Cookie'],
+  maxAge: 86400,
 }));
 
 // Health check endpoint

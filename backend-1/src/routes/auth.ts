@@ -4,6 +4,7 @@ import { Env } from '../types/env';
 import { DatabaseClient } from '../db/client';
 import { generateToken, generateRefreshToken, verifyToken } from '../utils/jwt';
 import { runSeeds } from '../db/seed';
+import { setCookie } from 'hono/cookie';
 
 const auth = new Hono<{ Bindings: Env }>();
 
@@ -40,7 +41,7 @@ auth.post('/init-admin', async (c) => {
 auth.post('/login', async (c) => {
   const db = new DatabaseClient(c.env);
   const { email, password } = await c.req.json();
-  
+  console.log("DB binding is:", c.env);
   if (!email || !password) {
     return c.json({ success: false, error: 'Email and password are required' }, 400);
   }
@@ -85,10 +86,15 @@ auth.post('/login', async (c) => {
       [user.id, accessToken, c.req.header('CF-Connecting-IP') || 'unknown', c.req.header('User-Agent') || 'unknown']
     );
     
-    // Set cookie
-    const isProduction = c.env.ENVIRONMENT === 'production';
-    c.header('Set-Cookie', `auth_token=${accessToken}; Path=/; HttpOnly; ${isProduction ? 'Secure; SameSite=Strict' : 'SameSite=Lax'}; Max-Age=86400`);
-    
+    setCookie(c, "auth_token", accessToken, {
+      domain: c.env.ENVIRONMENT === "production" ? "" : "localhost",
+      httpOnly: true,
+      secure: c.env.ENVIRONMENT === "production" ? true : false,
+      path: "/",
+      sameSite: "none"
+    });
+
+
     return c.json({
       success: true,
       user: {
@@ -101,7 +107,6 @@ auth.post('/login', async (c) => {
       refreshToken
     });
   } catch (error) {
-    console.error('Login error:', error);
     return c.json({ success: false, error: 'Login failed' }, 500);
   }
 });

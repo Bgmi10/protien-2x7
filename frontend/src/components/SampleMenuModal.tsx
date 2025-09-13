@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, Clock, Salad, Coffee, Moon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, Calendar, Salad, Coffee, Moon, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface MealItem {
   name: string;

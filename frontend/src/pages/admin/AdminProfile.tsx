@@ -1,79 +1,12 @@
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Phone, Calendar, Shield, LogOut, Users, ShoppingCart, Package, DollarSign } from 'lucide-react';
+import { Users, ShoppingCart, Package, TrendingUp, Calendar, DollarSign } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-
-interface AdminData {
-  id: number;
-  email: string;
-  name: string;
-  phone: string;
-  role: string;
-  last_login: string;
-  created_at: string;
-}
-
-interface Statistics {
-  totalUsers: number;
-  totalOrders: number;
-  activeSubscriptions: number;
-  totalRevenue: number;
-}
+import ProfileDropdown from '../../components/admin/ProfileDropdown';
 
 export default function AdminProfile() {
-  const { user, logout } = useAuth();
+  const { user, isLoading } = useAuth();
   const navigate = useNavigate();
-  const [adminData, setAdminData] = useState<AdminData | null>(null);
-  const [statistics, setStatistics] = useState<Statistics | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    fetchAdminProfile();
-  }, []);
-
-  const fetchAdminProfile = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/auth/admin/profile`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include', // Send cookies with request
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setAdminData(data.admin);
-          setStatistics(data.statistics);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to fetch admin profile:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleLogout = async () => {
-    await logout();
-    navigate('/admin/login');
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('en-IN', {
-      dateStyle: 'medium',
-      timeStyle: 'short',
-    });
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-    }).format(amount);
-  };
 
   if (isLoading) {
     return (
@@ -83,10 +16,18 @@ export default function AdminProfile() {
     );
   }
 
+  // Mock stats - replace with actual data from API
+  const stats = [
+    { label: 'Total Orders', value: '156', icon: ShoppingCart, color: 'bg-blue-500' },
+    { label: 'Active Users', value: '89', icon: Users, color: 'bg-green-500' },
+    { label: 'Meal Plans', value: '12', icon: Package, color: 'bg-purple-500' },
+    { label: 'Revenue', value: '₹45,670', icon: DollarSign, color: 'bg-yellow-500' },
+  ];
+
   return (
     <div className="pt-16 sm:pt-20 lg:pt-24 pb-8 sm:pb-16 lg:pb-20 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+        {/* Header with Profile Dropdown */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -95,188 +36,116 @@ export default function AdminProfile() {
         >
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-2">
-                Admin Dashboard
-              </h1>
+              
               <p className="text-sm sm:text-lg text-gray-600">
-                Welcome back, {adminData?.name || user?.name}
+                Welcome back, {user?.name}
               </p>
             </div>
-            <button
-              onClick={handleLogout}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-semibold flex items-center space-x-2 transition-all duration-300"
-            >
-              <LogOut className="h-5 w-5" />
-              <span>Logout</span>
-            </button>
+            <ProfileDropdown />
           </div>
         </motion.div>
 
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            className="bg-white rounded-xl shadow-lg p-6"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="bg-blue-100 rounded-full p-3">
-                <Users className="h-6 w-6 text-blue-600" />
-              </div>
-              <span className="text-sm text-gray-500">Total</span>
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900">{statistics?.totalUsers || 0}</h3>
-            <p className="text-sm text-gray-600 mt-1">Registered Users</p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="bg-white rounded-xl shadow-lg p-6"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="bg-green-100 rounded-full p-3">
-                <ShoppingCart className="h-6 w-6 text-green-600" />
-              </div>
-              <span className="text-sm text-gray-500">Total</span>
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900">{statistics?.totalOrders || 0}</h3>
-            <p className="text-sm text-gray-600 mt-1">Orders Placed</p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="bg-white rounded-xl shadow-lg p-6"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="bg-purple-100 rounded-full p-3">
-                <Package className="h-6 w-6 text-purple-600" />
-              </div>
-              <span className="text-sm text-gray-500">Active</span>
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900">{statistics?.activeSubscriptions || 0}</h3>
-            <p className="text-sm text-gray-600 mt-1">Subscriptions</p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="bg-white rounded-xl shadow-lg p-6"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="bg-yellow-100 rounded-full p-3">
-                <DollarSign className="h-6 w-6 text-yellow-600" />
-              </div>
-              <span className="text-sm text-gray-500">Total</span>
-            </div>
-            <h3 className="text-xl font-bold text-gray-900">{formatCurrency(statistics?.totalRevenue || 0)}</h3>
-            <p className="text-sm text-gray-600 mt-1">Revenue</p>
-          </motion.div>
-        </div>
-
-        {/* Admin Profile Info */}
+        {/* Stats Grid */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="bg-white rounded-xl shadow-lg p-6 sm:p-8"
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
         >
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Admin Information</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <User className="h-5 w-5 text-gray-400" />
+          {stats.map((stat, index) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 * index }}
+              className="bg-white rounded-xl shadow-lg p-6"
+            >
+              <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-500">Name</p>
-                  <p className="font-medium text-gray-900">{adminData?.name}</p>
+                  <p className="text-sm text-gray-600 mb-1">{stat.label}</p>
+                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                </div>
+                <div className={`${stat.color} p-3 rounded-lg`}>
+                  <stat.icon className="h-6 w-6 text-white" />
                 </div>
               </div>
-              
-              <div className="flex items-center space-x-3">
-                <Mail className="h-5 w-5 text-gray-400" />
-                <div>
-                  <p className="text-sm text-gray-500">Email</p>
-                  <p className="font-medium text-gray-900">{adminData?.email}</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-3">
-                <Phone className="h-5 w-5 text-gray-400" />
-                <div>
-                  <p className="text-sm text-gray-500">Phone</p>
-                  <p className="font-medium text-gray-900">{adminData?.phone}</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <Shield className="h-5 w-5 text-gray-400" />
-                <div>
-                  <p className="text-sm text-gray-500">Role</p>
-                  <p className="font-medium text-gray-900 capitalize">{adminData?.role}</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-3">
-                <Calendar className="h-5 w-5 text-gray-400" />
-                <div>
-                  <p className="text-sm text-gray-500">Last Login</p>
-                  <p className="font-medium text-gray-900">
-                    {adminData?.last_login ? formatDate(adminData.last_login) : 'Never'}
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-3">
-                <Calendar className="h-5 w-5 text-gray-400" />
-                <div>
-                  <p className="text-sm text-gray-500">Account Created</p>
-                  <p className="font-medium text-gray-900">
-                    {adminData?.created_at ? formatDate(adminData.created_at) : 'Unknown'}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+            </motion.div>
+          ))}
         </motion.div>
 
         {/* Quick Actions */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6"
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
           <button
             onClick={() => navigate('/admin/meal-plans')}
-            className="bg-blue-600 hover:bg-blue-700 text-white p-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105"
+            className="bg-white hover:bg-gray-50 border-2 border-blue-500 text-blue-600 p-8 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 group"
           >
-            <Package className="h-8 w-8 mb-3 mx-auto" />
-            <span className="block">Manage Meal Plans</span>
+            <Package className="h-12 w-12 mb-4 mx-auto group-hover:scale-110 transition-transform" />
+            <span className="block text-lg">Manage Meal Plans</span>
+            <span className="block text-sm text-gray-500 mt-2">Add, edit, or remove meal plans</span>
           </button>
           
           <button
             onClick={() => navigate('/admin/users')}
-            className="bg-green-600 hover:bg-green-700 text-white p-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105"
+            className="bg-white hover:bg-gray-50 border-2 border-green-500 text-green-600 p-8 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 group"
           >
-            <Users className="h-8 w-8 mb-3 mx-auto" />
-            <span className="block">Manage Users</span>
+            <Users className="h-12 w-12 mb-4 mx-auto group-hover:scale-110 transition-transform" />
+            <span className="block text-lg">Manage Users</span>
+            <span className="block text-sm text-gray-500 mt-2">View and manage user accounts</span>
           </button>
           
           <button
             onClick={() => navigate('/admin/orders')}
-            className="bg-purple-600 hover:bg-purple-700 text-white p-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105"
+            className="bg-white hover:bg-gray-50 border-2 border-purple-500 text-purple-600 p-8 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 group"
           >
-            <ShoppingCart className="h-8 w-8 mb-3 mx-auto" />
-            <span className="block">View Orders</span>
+            <ShoppingCart className="h-12 w-12 mb-4 mx-auto group-hover:scale-110 transition-transform" />
+            <span className="block text-lg">View Orders</span>
+            <span className="block text-sm text-gray-500 mt-2">Track and manage customer orders</span>
           </button>
+        </motion.div>
+
+        {/* Recent Activity */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="mt-8 bg-white rounded-xl shadow-lg p-6"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-900">Recent Activity</h2>
+            <TrendingUp className="h-5 w-5 text-gray-400" />
+          </div>
+          <div className="space-y-4">
+            {[
+              { time: '2 hours ago', action: 'New order placed', user: 'John Doe', type: 'order' },
+              { time: '5 hours ago', action: 'User registered', user: 'Jane Smith', type: 'user' },
+              { time: '1 day ago', action: 'Meal plan updated', user: 'Admin', type: 'update' },
+              { time: '2 days ago', action: 'Payment received', user: 'Mike Johnson', type: 'payment' },
+            ].map((activity, index) => (
+              <div key={index} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-2 h-2 rounded-full ${
+                    activity.type === 'order' ? 'bg-blue-500' :
+                    activity.type === 'user' ? 'bg-green-500' :
+                    activity.type === 'update' ? 'bg-yellow-500' :
+                    'bg-purple-500'
+                  }`}></div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{activity.action}</p>
+                    <p className="text-xs text-gray-500">{activity.user}</p>
+                  </div>
+                </div>
+                <div className="flex items-center text-xs text-gray-400">
+                  <Calendar className="h-3 w-3 mr-1" />
+                  {activity.time}
+                </div>
+              </div>
+            ))}
+          </div>
         </motion.div>
       </div>
     </div>

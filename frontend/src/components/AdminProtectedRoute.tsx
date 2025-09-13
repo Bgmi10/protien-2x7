@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { motion } from 'framer-motion';
 import { Loader2, Lock } from 'lucide-react';
 
-export default function AdminProtectedRoute() {
+export default function   AdminProtectedRoute() {
   const { user, isLoading, isAdmin } = useAuth();
   const location = useLocation();
 

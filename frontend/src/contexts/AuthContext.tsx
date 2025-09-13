@@ -1,12 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { API_URL } from '../utils/constants';
-
-interface User {
-  id: number;
-  email: string;
-  name: string;
-  role: string;
-}
+import type { User } from '../types';
 
 interface AuthContextType {
   user: User | null;
@@ -14,7 +8,6 @@ interface AuthContextType {
   isAdmin: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
-  checkAuth: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,41 +19,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Check if user is admin
   const isAdmin = user?.role === 'admin';
 
-  // Check authentication status on mount
   useEffect(() => {
-    checkAuth();
+    fetchAdminProfile();
   }, []);
-
-  // Verify token and get user info (cookie-based)
-  const checkAuth = async () => {
-    try {
-      const response = await fetch(`${API_URL}/api/v1/auth/verify`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include', // This sends cookies with the request
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success && data.user) {
-          setUser(data.user);
-        } else {
-          setUser(null);
-        }
-      } else {
-        setUser(null);
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Login function (cookie-based)
+  
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       const response = await fetch(`${API_URL}/api/v1/auth/login`, {
@@ -88,7 +50,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Logout function (cookie-based)
+  const fetchAdminProfile = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/auth/admin/profile`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Send cookies with request
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setUser(data.user);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch admin profile:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = async () => {
     try {
       await fetch(`${API_URL}/api/v1/auth/logout`, {
@@ -112,7 +96,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAdmin,
     login,
     logout,
-    checkAuth,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

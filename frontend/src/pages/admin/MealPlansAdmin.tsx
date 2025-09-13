@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Edit2, Trash2, Save, X, Package, RefreshCw } from 'lucide-react';
 import { mealPlansApi } from '../../services/api';
+import ProfileDropdown from '../../components/admin/ProfileDropdown';
 
 interface MealPlan {
   id: number;
@@ -155,19 +156,20 @@ export default function MealPlansAdmin() {
             <div className="flex items-center space-x-3">
               <button
                 onClick={fetchMealPlans}
-                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-semibold flex items-center space-x-2 transition-all duration-300"
+                className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg font-semibold flex items-center space-x-2 transition-all duration-300"
                 disabled={loading}
               >
-                <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
-                <span>Refresh</span>
+                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">Refresh</span>
               </button>
               <button
                 onClick={() => setShowAddForm(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-semibold flex items-center space-x-2 transition-all duration-300"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg font-semibold flex items-center space-x-2 transition-all duration-300"
               >
-                <Plus className="h-5 w-5" />
-                <span>Add New Plan</span>
+                <Plus className="h-4 w-4" />
+                <span>Add Plan</span>
               </button>
+              <ProfileDropdown />
             </div>
           </div>
         </motion.div>

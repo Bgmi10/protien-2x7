@@ -2,9 +2,10 @@ import { Hono } from 'hono';
 import bcrypt from 'bcryptjs';
 import { Env } from '../types/env';
 import { DatabaseClient } from '../db/client';
-import { generateToken, generateRefreshToken, verifyToken } from '../utils/jwt';
+import { generateToken, generateRefreshToken } from '../utils/jwt';
 import { runSeeds } from '../db/seed';
-import { setCookie } from 'hono/cookie';
+import { setCookie, deleteCookie } from 'hono/cookie';
+import { requireAdmin, requireAuth } from '../middleware/auth';
 
 const auth = new Hono<{ Bindings: Env }>();
 
@@ -87,7 +88,6 @@ auth.post('/login', async (c) => {
     );
     
     setCookie(c, "auth_token", accessToken, {
-      domain: c.env.ENVIRONMENT === "production" ? "" : "localhost",
       httpOnly: true,
       secure: c.env.ENVIRONMENT === "production" ? true : false,
       path: "/",
@@ -111,88 +111,21 @@ auth.post('/login', async (c) => {
   }
 });
 
-// Logout endpoint
-auth.post('/logout', async (c) => {
-  const db = new DatabaseClient(c.env);
-  // Extract token from cookie
-  const cookieHeader = c.req.header('Cookie');
-  const token = cookieHeader?.match(/auth_token=([^;]+)/)?.[1];
-  
-  if (token) {
-    try {
-      // Remove session from database
-      await db.execute('DELETE FROM sessions WHERE token = ?', [token]);
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  }
-  
-  // Clear cookie
-  c.header('Set-Cookie', 'auth_token=; Path=/; HttpOnly; Max-Age=0');
-  
+auth.post('/logout', requireAuth,  async (c) => {
+  deleteCookie(c, "auth_token", {
+    httpOnly: true,
+    secure: c.env.ENVIRONMENT === "production" ? true : false,
+    path: "/",
+    sameSite: "none"
+  });
   return c.json({ success: true, message: 'Logged out successfully' });
 });
 
-// Verify token endpoint
-auth.get('/verify', async (c) => {
-  // Extract token from cookie only
-  const cookieHeader = c.req.header('Cookie');
-  const token = cookieHeader?.match(/auth_token=([^;]+)/)?.[1];
-  
-  if (!token) {
-    return c.json({ success: false, error: 'No token provided' }, 401);
-  }
-  
-  const payload = await verifyToken(token, c.env);
-  
-  if (!payload) {
-    return c.json({ success: false, error: 'Invalid token' }, 401);
-  }
-  
+auth.get('/admin/profile', requireAdmin, async (c) => {
+  const { userId } = c.get('user');
   const db = new DatabaseClient(c.env);
-  
-  // Check if session exists and is valid
-  const session = await db.queryOne<{ expires_at: string }>(
-    'SELECT expires_at FROM sessions WHERE token = ? AND expires_at > CURRENT_TIMESTAMP',
-    [token]
-  );
-  
-  if (!session) {
-    return c.json({ success: false, error: 'Session expired' }, 401);
-  }
-  
-  // Get user details
-  const user = await db.queryOne<{ id: number; email: string; name: string; role: string }>(
-    'SELECT id, email, name, role FROM users WHERE id = ? AND is_active = 1',
-    [payload.userId]
-  );
-  
-  if (!user) {
-    return c.json({ success: false, error: 'User not found' }, 404);
-  }
-  
-  return c.json({ success: true, user });
-});
 
-// Admin profile endpoint
-auth.get('/admin/profile', async (c) => {
-  // Extract token from cookie only
-  const cookieHeader = c.req.header('Cookie');
-  const token = cookieHeader?.match(/auth_token=([^;]+)/)?.[1];
-  
-  if (!token) {
-    return c.json({ success: false, error: 'Unauthorized' }, 401);
-  }
-  
-  const payload = await verifyToken(token, c.env);
-  
-  if (!payload || payload.role !== 'admin') {
-    return c.json({ success: false, error: 'Admin access required' }, 403);
-  }
-  
-  const db = new DatabaseClient(c.env);
-  
-  const admin = await db.queryOne<{
+  const user = await db.queryOne<{
     id: number;
     email: string;
     name: string;
@@ -202,30 +135,16 @@ auth.get('/admin/profile', async (c) => {
     created_at: string;
   }>(
     'SELECT id, email, name, phone, role, last_login, created_at FROM users WHERE id = ?',
-    [payload.userId]
+    [userId]
   );
   
-  if (!admin) {
+  if (!user) {
     return c.json({ success: false, error: 'Admin not found' }, 404);
   }
-  
-  // Get admin statistics
-  const stats = await Promise.all([
-    db.queryOne<{ count: number }>('SELECT COUNT(*) as count FROM users'),
-    db.queryOne<{ count: number }>('SELECT COUNT(*) as count FROM orders'),
-    db.queryOne<{ count: number }>('SELECT COUNT(*) as count FROM subscriptions WHERE status = "active"'),
-    db.queryOne<{ total: number }>('SELECT SUM(total_amount) as total FROM orders WHERE payment_status = "paid"')
-  ]);
-  
+
   return c.json({
     success: true,
-    admin,
-    statistics: {
-      totalUsers: stats[0]?.count || 0,
-      totalOrders: stats[1]?.count || 0,
-      activeSubscriptions: stats[2]?.count || 0,
-      totalRevenue: stats[3]?.total || 0
-    }
+    user,
   });
 });
 

@@ -14,11 +14,7 @@ app.use('*', logger());
 app.use('*', cors({
   origin: [
     'http://localhost:5173',
-    'http://localhost:5174',
-    'http://localhost:3000',
-    'http://127.0.0.1:5173',
-    'https://protein2x7.com',
-    'https://www.protein2x7.com'
+    'https://protien-2x7.vercel.app',
   ],
   credentials: true, // This is crucial for cookies to work
   allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Set-Cookie'],
@@ -27,78 +23,6 @@ app.use('*', cors({
   maxAge: 86400,
 }));
 
-// Health check endpoint
-app.get('/health', async (c) => {
-  const db = new DatabaseClient(c.env);
-  
-  try {
-    // Test database connection
-    await db.query('SELECT 1');
-    
-    return c.json({
-      status: 'healthy',
-      environment: c.env.ENVIRONMENT,
-      apiVersion: c.env.API_VERSION,
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error) {
-    return c.json({
-      status: 'unhealthy',
-      error: 'Database connection failed',
-      timestamp: new Date().toISOString(),
-    }, 500);
-  }
-});
-
-// API Info endpoint
-app.get('/', (c) => {
-  return c.json({
-    name: 'protein2x7 API',
-    version: c.env.API_VERSION,
-    environment: c.env.ENVIRONMENT,
-    endpoints: {
-      health: '/health',
-      users: '/api/v1/users',
-      mealPlans: '/api/v1/meal-plans',
-      subscriptions: '/api/v1/subscriptions',
-      orders: '/api/v1/orders',
-      meals: '/api/v1/meals',
-    },
-  });
-});
-
-// Initialize database (run migrations on first request if needed)
-app.get('/api/init-db', async (c) => {
-  const db = new DatabaseClient(c.env);
-  
-  try {
-    // Check if tables exist
-    const tables = await db.query<{ name: string }>(
-      "SELECT name FROM sqlite_master WHERE type='table'"
-    );
-    
-    if (tables.length === 0) {
-      return c.json({
-        success: false,
-        message: 'No tables found. Please run migrations using: npx wrangler d1 migrations apply protein2x7-db',
-      });
-    }
-    
-    return c.json({
-      success: true,
-      message: 'Database initialized',
-      tables: tables.map(t => t.name),
-    });
-  } catch (error) {
-    return c.json({
-      success: false,
-      error: 'Failed to initialize database',
-      details: error instanceof Error ? error.message : 'Unknown error',
-    }, 500);
-  }
-});
-
-// Mount routes
 app.route('/api/v1/auth', auth);
 app.route('/api/v1/users', users);
 app.route('/api/v1/meal-plans', mealPlans);

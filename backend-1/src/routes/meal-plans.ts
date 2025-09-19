@@ -20,6 +20,7 @@ interface MealPlan {
   is_active: boolean;
   display_order?: number;
   description?: string;
+  image_url?: string;
   created_at: string;
   updated_at: string;
 }
@@ -94,7 +95,8 @@ mealPlans.post('/admin/create', requireAdmin, async (c) => {
     meal_type,
     plan_type,
     is_trial,
-    description
+    description,
+    image_url
   } = await c.req.json();
   
   // Validate required fields
@@ -112,8 +114,8 @@ mealPlans.post('/admin/create', requireAdmin, async (c) => {
     const result = await db.execute(
       `INSERT INTO meal_plans (
         name, number_of_meals, original_cost, discounted_price, discount_percent,
-        duration_days, meal_type, plan_type, is_trial, description, created_by
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        duration_days, meal_type, plan_type, is_trial, description, created_by, image_url
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         name,
         number_of_meals,
@@ -125,7 +127,8 @@ mealPlans.post('/admin/create', requireAdmin, async (c) => {
         plan_type || 'individual',
         is_trial ? 1 : 0,
         description || null,
-        user.userId
+        user?.userId,
+        image_url || null
       ]
     );
     

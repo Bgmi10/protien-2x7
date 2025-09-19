@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Edit2, Trash2, Save, X, Package, RefreshCw } from 'lucide-react';
-import { mealPlansApi } from '../../services/api';
+import { Plus, Edit2, Trash2, Save, X, Package, RefreshCw, Upload, Image as ImageIcon } from 'lucide-react';
+import { mealPlansApi, uploadApi } from '../../services/api';
 import ProfileDropdown from '../../components/admin/ProfileDropdown';
 
 interface MealPlan {
@@ -18,6 +18,7 @@ interface MealPlan {
   is_trial?: boolean;
   description?: string;
   display_order?: number;
+  image_url?: string;
 }
 
 export default function MealPlansAdmin() {
@@ -27,6 +28,8 @@ export default function MealPlansAdmin() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   // Fetch meal plans on component mount
   useEffect(() => {
@@ -54,6 +57,7 @@ export default function MealPlansAdmin() {
   const handleEdit = (plan: MealPlan) => {
     setEditingId(plan.id);
     setFormData(plan);
+    setImagePreview(plan.image_url || null);
   };
 
   const handleSave = async () => {
@@ -79,6 +83,7 @@ export default function MealPlansAdmin() {
     setEditingId(null);
     setFormData({});
     setShowAddForm(false);
+    setImagePreview(null);
   };
 
   const handleDelete = async (id: number) => {
@@ -132,6 +137,42 @@ export default function MealPlansAdmin() {
     }
     
     setFormData(newFormData);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image size should be less than 5MB');
+      return;
+    }
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Upload to R2
+    try {
+      setUploadingImage(true);
+      setError(null);
+      const response = await uploadApi.uploadImage(file);
+      
+      if (response.success) {
+        setFormData({ ...formData, image_url: response.url });
+      } else {
+        setError(response.error || 'Failed to upload image');
+      }
+    } catch (err) {
+      setError('Failed to upload image');
+      console.error('Error uploading image:', err);
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   return (
@@ -244,6 +285,40 @@ export default function MealPlansAdmin() {
                 />
               </div>
             </div>
+            
+            {/* Image Upload */}
+            <div className="col-span-full mt-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Meal Plan Image</label>
+              <div className="flex items-center space-x-4">
+                {(imagePreview || formData.image_url) && (
+                  <img 
+                    src={imagePreview || formData.image_url} 
+                    alt="Preview" 
+                    className="h-24 w-24 object-cover rounded-lg"
+                  />
+                )}
+                <label className="cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    disabled={uploadingImage}
+                  />
+                  <div className="flex items-center space-x-2 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 transition-colors">
+                    {uploadingImage ? (
+                      <RefreshCw className="h-5 w-5 animate-spin text-blue-500" />
+                    ) : (
+                      <Upload className="h-5 w-5 text-gray-500" />
+                    )}
+                    <span className="text-sm text-gray-600">
+                      {uploadingImage ? 'Uploading...' : 'Upload Image'}
+                    </span>
+                  </div>
+                </label>
+              </div>
+            </div>
+            
             <div className="flex justify-end space-x-3 mt-4">
               <button
                 onClick={handleCancel}
@@ -272,6 +347,9 @@ export default function MealPlansAdmin() {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
+                  <th className="px-4 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Image
+                  </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Pack Name
                   </th>
@@ -298,7 +376,7 @@ export default function MealPlansAdmin() {
               <tbody className="divide-y divide-gray-200">
                 {loading && (
                   <tr>
-                    <td colSpan={7} className="text-center py-8">
+                    <td colSpan={8} className="text-center py-8">
                       <div className="flex justify-center items-center space-x-2">
                         <RefreshCw className="h-5 w-5 animate-spin text-gray-500" />
                         <span className="text-gray-500">Loading meal plans...</span>
@@ -308,6 +386,21 @@ export default function MealPlansAdmin() {
                 )}
                 {!loading && mealPlans.map((plan) => (
                   <tr key={plan.id} className="hover:bg-gray-50 transition-colors">
+                    {/* Image Column */}
+                    <td className="px-4 py-4 text-center">
+                      {plan.image_url ? (
+                        <img 
+                          src={plan.image_url} 
+                          alt={plan.name}
+                          className="h-12 w-12 object-cover rounded-lg mx-auto"
+                        />
+                      ) : (
+                        <div className="h-12 w-12 bg-gray-200 rounded-lg flex items-center justify-center mx-auto">
+                          <ImageIcon className="h-6 w-6 text-gray-400" />
+                        </div>
+                      )}
+                    </td>
+                    {/* Name Column */}
                     <td className="px-6 py-4">
                       {editingId === plan.id ? (
                         <input

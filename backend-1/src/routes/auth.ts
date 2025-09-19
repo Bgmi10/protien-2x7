@@ -111,7 +111,7 @@ auth.post('/login', async (c) => {
   }
 });
 
-auth.post('/logout', requireAuth,  async (c) => {
+auth.post('/logout', requireAuth, async (c) => {
   deleteCookie(c, "auth_token", {
     httpOnly: true,
     secure: c.env.ENVIRONMENT === "production" ? true : false,

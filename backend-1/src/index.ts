@@ -2,10 +2,10 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { Env } from './types/env';
-import { DatabaseClient } from './db/client';
 import users from './routes/users';
 import auth from './routes/auth';
 import mealPlans from './routes/meal-plans';
+import upload from './routes/upload';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -15,6 +15,8 @@ app.use('*', cors({
   origin: [
     'http://localhost:5173',
     'https://protien-2x7.vercel.app',
+    'https://app.tnkalyanavelai.com',
+    
   ],
   credentials: true, // This is crucial for cookies to work
   allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Set-Cookie'],
@@ -26,6 +28,7 @@ app.use('*', cors({
 app.route('/api/v1/auth', auth);
 app.route('/api/v1/users', users);
 app.route('/api/v1/meal-plans', mealPlans);
+app.route('/api/v1/upload', upload);
 
 // 404 handler
 app.notFound((c) => {

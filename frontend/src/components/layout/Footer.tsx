@@ -134,14 +134,43 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="border-t border-gray-800 mt-4 sm:mt-6 lg:mt-8 pt-4 sm:pt-6 lg:pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm sm:text-xs lg:text-sm text-gray-400">
-            © 2024 protein2x7. All rights reserved.
-          </p>
-          <p className="text-sm sm:text-xs lg:text-sm text-gray-400 flex items-center mt-2 md:mt-0">
-            Made with <Heart className="h-2 w-2 sm:h-3 sm:w-3 lg:h-4 lg:w-4 text-red-500 mx-0.5 sm:mx-1" /> for fitness enthusiasts
-          </p>
+        {/* Regulatory Info */}
+        <div className="border-t border-gray-800 mt-4 sm:mt-6 lg:mt-8 pt-4 sm:pt-6 lg:pt-8">
+          <div className="flex flex-wrap justify-center items-center gap-4 mb-3">
+            {/* FSSAI License with Logo */}
+            <div className="flex items-center space-x-2 text-gray-400">
+              <img 
+                src="/assets/fssai-logo.png" 
+                alt="FSSAI" 
+                className="h-6 w-6 object-contain bg-white rounded p-0.5"
+                onError={(e) => {
+                  e.currentTarget.src = "https://imgs.search.brave.com/CHtRwHAuoj9Qc9W72lqhWwxiZADIZzErm8VCAogveoQ/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9zZWVr/dmVjdG9ycy5jb20v/c3RvcmFnZS9pbWFn/ZXMvRlNTQUklMjBM/T0dPLnN2Zw";
+                }}
+              />
+              <div className="text-xs">
+                <span className="text-gray-500">License:</span>
+                <span className="ml-1 text-gray-300">22225059000857</span>
+              </div>
+            </div>
+            
+            <span className="text-gray-700 hidden sm:inline">•</span>
+            
+            {/* MSME Registration */}
+            <div className="text-xs text-gray-400">
+              <span className="text-gray-500">MSME:</span>
+              <span className="ml-1 text-gray-300">UDYAM-RJ-17-0539766</span>
+            </div>
+          </div>
+          
+          {/* Bottom Bar */}
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <p className="text-sm sm:text-xs lg:text-sm text-gray-400">
+              © 2024 protein2x7. All rights reserved.
+            </p>
+            <p className="text-sm sm:text-xs lg:text-sm text-gray-400 flex items-center mt-2 md:mt-0">
+              Made with <Heart className="h-2 w-2 sm:h-3 sm:w-3 lg:h-4 lg:w-4 text-red-500 mx-0.5 sm:mx-1" /> for fitness enthusiasts
+            </p>
+          </div>
         </div>
       </div>
     </footer>

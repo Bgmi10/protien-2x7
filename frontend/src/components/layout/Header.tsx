@@ -52,11 +52,37 @@ export default function Header() {
       WebkitBackdropFilter: 'blur(12px)'
     }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between lg:h-22 h-18">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <img src="/assets/logo1.png" alt="" className='w-10 sm:w-16 lg:w-20'/>
-          </Link>
+        <div className="flex items-center justify-between lg:h-24 h-18">
+          {/* Logo with FSSAI */}
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            <Link to="/" className="flex items-center">
+              <img src="/assets/logo1.png" alt="" className='w-10 sm:w-16 lg:w-20'/>
+            </Link>
+            
+            {/* Divider */}
+            <div className="hidden sm:block h-8 lg:h-10 w-px bg-gray-300"></div>
+            
+            {/* FSSAI Badge */}
+            <div className='hidden sm:flex flex-start flex-col'>
+              <div className=" sm:flex items-center space-x-2">
+                <img 
+                  src="https://imgs.search.brave.com/CHtRwHAuoj9Qc9W72lqhWwxiZADIZzErm8VCAogveoQ/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9zZWVr/dmVjdG9ycy5jb20v/c3RvcmFnZS9pbWFn/ZXMvRlNTQUklMjBM/T0dPLnN2Zw" 
+                  alt="FSSAI" 
+                  className="h-7 w-7 lg:h-9 lg:w-9 object-contain"
+                  onError={(e) => {
+                    e.currentTarget.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Food_Safety_and_Standards_Authority_of_India_logo.png/640px-Food_Safety_and_Standards_Authority_of_India_logo.png";
+                  }}
+                />
+                <div className="flex flex-col">
+                  <span className="text-[10px] lg:text-xs font-semibold text-gray-700 leading-tight">22225059000857</span>
+                </div>
+              </div>
+              <div className="text-[10px] text-gray-400">
+                <span className="text-gray-500">MSME:</span>
+                <span className="ml-2 text-[10px] lg:text-xs font-semibold text-gray-700 leading-tight">UDYAM-RJ-17-0539766</span>
+              </div>
+            </div>
+          </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">

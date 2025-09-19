@@ -76,6 +76,34 @@ export const mealPlansApi = {
   },
 };
 
+// Upload API
+export const uploadApi = {
+  async uploadImage(file: File) {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const response = await fetch(`${API_URL}/api/v1/upload/image`, {
+      method: 'POST',
+      body: formData,
+      credentials: 'include',
+    });
+
+    if (!response.ok && response.status === 401) {
+      window.location.href = '/admin/login';
+      throw new Error('Unauthorized');
+    }
+
+    return response.json();
+  },
+
+  async deleteImage(key: string) {
+    const response = await fetchWithCredentials(`/api/v1/upload/image/${key}`, {
+      method: 'DELETE',
+    });
+    return response.json();
+  },
+};
+
 // Auth API
 export const authApi = {
   async login(email: string, password: string) {

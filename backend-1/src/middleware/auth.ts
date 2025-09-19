@@ -56,29 +56,61 @@ export async function requireAuth(c: Context<{ Bindings: Env }>, next: Next) {
     role: payload.role
   } as AuthUser);
 
-  await next();
+  return await next();
 }
 
 /**
  * Middleware to require admin role
  */
 export async function requireAdmin(c: Context<{ Bindings: Env }>, next: Next) {
-  // First check authentication
-  await requireAuth(c, next);
+  // Extract token from cookie
+  const cookieHeader = c.req.header('Cookie');
+  const token = cookieHeader?.match(/auth_token=([^;]+)/)?.[1];
 
-  // Check if response was already sent (auth failed)
-  if (c.res) {
-    return;
+  if (!token) {
+    return c.json({ success: false, error: 'Authentication required' }, 401);
   }
 
-  // Get user from context
-  const user = c.get('user') as AuthUser;
+  // Verify token
+  const payload = await verifyToken(token, c.env);
+  
+  if (!payload) {
+    return c.json({ success: false, error: 'Invalid or expired token' }, 401);
+  }
 
-  if (!user || user.role !== 'admin') {
+  // Check if session is valid
+  const db = new DatabaseClient(c.env);
+  const session = await db.queryOne<{ expires_at: string }>(
+    'SELECT expires_at FROM sessions WHERE token = ? AND expires_at > CURRENT_TIMESTAMP',
+    [token]
+  );
+
+  if (!session) {
+    return c.json({ success: false, error: 'Session expired' }, 401);
+  }
+
+  // Check if user is active and is admin
+  const user = await db.queryOne<{ is_active: boolean; role: string }>(
+    'SELECT is_active, role FROM users WHERE id = ? AND is_active = 1',
+    [payload.userId]
+  );
+
+  if (!user) {
+    return c.json({ success: false, error: 'Account inactive or not found' }, 403);
+  }
+
+  if (user.role !== 'admin') {
     return c.json({ success: false, error: 'Admin access required' }, 403);
   }
 
-  await next();
+  // Add user info to context
+  c.set('user', {
+    userId: payload.userId,
+    email: payload.email,
+    role: payload.role
+  } as AuthUser);
+
+  return await next();
 }
 
 /**

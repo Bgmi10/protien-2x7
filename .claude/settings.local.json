@@ -6,7 +6,13 @@
       "Bash(timeout 10 npm run nd)",
       "Bash(timeout 5 npm run nd)",
       "Bash(curl:*)",
-      "WebFetch(domain:www.fitmeals.co.in)"
+      "WebFetch(domain:www.fitmeals.co.in)",
+      "Bash(npx wrangler d1 execute:*)",
+      "Bash(npx wrangler deploy:*)",
+      "Bash(npx wrangler logout:*)",
+      "Bash(npx wrangler:*)",
+      "Bash(unset:*)",
+      "Bash(export CLOUDFLARE_API_TOKEN=\"\")"
     ],
     "deny": []
   }

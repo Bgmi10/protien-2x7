@@ -1,0 +1,64 @@
+
+
+// to update a env to cloude flare cmd
+C:\Users\Administrator\Desktop\projects\protein\backend-1>npx wrangler secret put ENVIRONMENT
+
+ ⛅️ wrangler 4.33.2 (update available 4.36.0)
+─────────────────────────────────────────────
+√ Enter a secret value: ...
+🌀 Creating the secret for the Worker "my-app"
+✨ Success! Uploaded secret ENVIRONMENT
+
+XXXX
+// to start hte server locally 
+
+npm run dev
+XXXX
+
+XXXX
+// to start the server in prod mode 
+
+npx wrangler dev --remote
+
+benefit of starting the dev in prod which will uses hte live db. if you choose to use the npm run dev then you have to run hte db locally 
+XXXX
+
+XXXX
+// to deploy app
+
+npx wrangler deploy
+XXXX
+
+XXXX
+// to preview the logs on prod 
+// you can get hte live prod logs when u run this cmd
+npx wrangler tail
+XXXX
+
+XXXX
+// whenever you configure something on env please update the wrangler.jsonc for the deployment purpose else it will not include that in the deployment script.
+
+// for example when u try to configure the r2 object store which has a binding name and then hte bucket name for instance this wiill the credentials to access the store
+// once you updated the .env which mean in this case it is a wrangelr.toml and then dont forget to update the wrangler.jsonc which is important for the deployment 
+XXXX
+
+XXXX
+// issue in npx wrangler dev --remote, 
+
+issue explaination this issue is basically tell u step up two variables for one production and dev different this way we can able to work with different things easily
+--------------------
+💡 Recommendation: for development, use a preview D1 database rather than the one you'd use in production.uction.                                                                                            to the d1_database "DB" in your wr
+💡 Create a new D1 database with "wrangler d1 create <name>" and add its id as preview_database_id 
+to the d1_database "DB" in your wrangler.json file
+--------------------
+
+                                                                                                    Please create a new r2 bucket wit
+X [ERROR] In development, you should use a separate r2 bucket than the one you'd use in production.ket_name" in your wrangler.json fi Please create a new r2 bucket with "wrangler r2 bucket create <name>" and add its name as preview_bucket_name to the r2_buckets "bucket_name" in your wrangler.json file
+
+solution for this => introduce the  => preview_bucket_name = "demo" this is for local dev and for prod u should mention without preview thats it
+XXXXX
+
+
+XXXXX
+wrangler.json is completely optional if you really want to step up some fancy way then u can use this one else completely delete use the wrangler.toml is good enough to go
+XXXXX

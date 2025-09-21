@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Edit2, Trash2, Save, X, Package, RefreshCw, Upload, Image as ImageIcon } from 'lucide-react';
+import { Plus, Edit2, Trash2, Eye, RefreshCw, Image as ImageIcon } from 'lucide-react';
 import { mealPlansApi, uploadApi } from '../../services/api';
 import ProfileDropdown from '../../components/admin/ProfileDropdown';
+import { MealPlanModal } from '../../components/modals/MealPlanModal';
 
 interface MealPlan {
   id: number;
@@ -23,13 +24,14 @@ interface MealPlan {
 
 export default function MealPlansAdmin() {
   const [mealPlans, setMealPlans] = useState<MealPlan[]>([]);
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [formData, setFormData] = useState<Partial<MealPlan>>({});
-  const [showAddForm, setShowAddForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  
+  // Modal states
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'view' | 'edit' | 'create'>('view');
+  const [selectedPlan, setSelectedPlan] = useState<MealPlan | null>(null);
 
   // Fetch meal plans on component mount
   useEffect(() => {
@@ -54,36 +56,51 @@ export default function MealPlansAdmin() {
     }
   };
 
+  const handleView = (plan: MealPlan) => {
+    setSelectedPlan(plan);
+    setModalMode('view');
+    setModalOpen(true);
+  };
+
   const handleEdit = (plan: MealPlan) => {
-    setEditingId(plan.id);
-    setFormData(plan);
-    setImagePreview(plan.image_url || null);
+    setSelectedPlan(plan);
+    setModalMode('edit');
+    setModalOpen(true);
   };
 
-  const handleSave = async () => {
-    if (editingId) {
-      try {
-        setError(null);
-        const response = await mealPlansApi.update(editingId, formData);
-        if (response.success) {
-          await fetchMealPlans();
-          setEditingId(null);
-          setFormData({});
-        } else {
-          setError(response.error || 'Failed to update meal plan');
-        }
-      } catch (err) {
-        setError('Failed to update meal plan');
-        console.error('Error updating meal plan:', err);
+  const handleCreate = () => {
+    setSelectedPlan(null);
+    setModalMode('create');
+    setModalOpen(true);
+  };
+
+  const handleSave = async (formData: Partial<MealPlan>) => {
+    try {
+      setError(null);
+      let response;
+      
+      if (modalMode === 'create') {
+        // Ensure is_trial is always sent
+        const dataToSend = {
+          ...formData,
+          is_trial: formData.is_trial || false
+        };
+        response = await mealPlansApi.create(dataToSend);
+      } else if (modalMode === 'edit' && selectedPlan) {
+        response = await mealPlansApi.update(selectedPlan.id, formData);
       }
+      
+      if (response?.success) {
+        await fetchMealPlans();
+        setModalOpen(false);
+        setSelectedPlan(null);
+      } else {
+        setError(response?.error || 'Failed to save meal plan');
+      }
+    } catch (err) {
+      setError('Failed to save meal plan');
+      console.error('Error saving meal plan:', err);
     }
-  };
-
-  const handleCancel = () => {
-    setEditingId(null);
-    setFormData({});
-    setShowAddForm(false);
-    setImagePreview(null);
   };
 
   const handleDelete = async (id: number) => {
@@ -103,108 +120,36 @@ export default function MealPlansAdmin() {
     }
   };
 
-  const handleAdd = async () => {
-    if (formData.name && formData.number_of_meals && formData.original_cost) {
-      try {
-        setError(null);
-        const response = await mealPlansApi.create({
-          ...formData,
-          discounted_price: formData.discounted_price || formData.original_cost,
-        });
-        if (response.success) {
-          await fetchMealPlans();
-          setShowAddForm(false);
-          setFormData({});
-        } else {
-          setError(response.error || 'Failed to create meal plan');
-        }
-      } catch (err) {
-        setError('Failed to create meal plan');
-        console.error('Error creating meal plan:', err);
-      }
-    }
-  };
-
-  const calculateDiscountPercent = (original: number, discounted: number) => {
-    return Math.round(((original - discounted) / original) * 100);
-  };
-
-  const handlePriceChange = (field: 'original_cost' | 'discounted_price', value: number) => {
-    const newFormData = { ...formData, [field]: value };
-    
-    if (newFormData.original_cost && newFormData.discounted_price) {
-      newFormData.discount_percent = calculateDiscountPercent(newFormData.original_cost, newFormData.discounted_price);
-    }
-    
-    setFormData(newFormData);
-  };
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Validate file size
-    if (file.size > 5 * 1024 * 1024) {
-      setError('Image size should be less than 5MB');
-      return;
-    }
-
-    // Create preview
-    const reader = new FileReader();
-    reader.onload = () => {
-      setImagePreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-
-    // Upload to R2
+  const handleImageUpload = async (file: File): Promise<string | null> => {
     try {
       setUploadingImage(true);
-      setError(null);
       const response = await uploadApi.uploadImage(file);
-      
-      if (response.success) {
-        setFormData({ ...formData, image_url: response.url });
-      } else {
-        setError(response.error || 'Failed to upload image');
+      if (response.success && response.url) {
+        return response.url;
       }
-    } catch (err) {
-      setError('Failed to upload image');
-      console.error('Error uploading image:', err);
+      return null;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      return null;
     } finally {
       setUploadingImage(false);
     }
   };
 
   return (
-    <div className="pt-16 sm:pt-20 lg:pt-24 pb-8 sm:pb-16 lg:pb-20 bg-gray-50 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="mb-8 sm:mb-12"
+          className="mb-8 mt-20"
         >
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-2">
-                Meal Plans Management
-              </h1>
-              <p className="text-sm sm:text-lg text-gray-600">
-                Add, edit, or remove meal plans as needed
-              </p>
-            </div>
-            <div className="flex items-center space-x-3">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <div className="flex items-center space-x-4">
               <button
-                onClick={fetchMealPlans}
-                className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg font-semibold flex items-center space-x-2 transition-all duration-300"
-                disabled={loading}
-              >
-                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-                <span className="hidden sm:inline">Refresh</span>
-              </button>
-              <button
-                onClick={() => setShowAddForm(true)}
+                onClick={handleCreate}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg font-semibold flex items-center space-x-2 transition-all duration-300"
               >
                 <Plus className="h-4 w-4" />
@@ -226,117 +171,7 @@ export default function MealPlansAdmin() {
           </motion.div>
         )}
 
-        {/* Add New Plan Form */}
-        {showAddForm && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-xl shadow-lg p-6 mb-8"
-          >
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Add New Meal Plan</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Plan Name</label>
-                <input
-                  type="text"
-                  value={formData.name || ''}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter plan name"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Number of Meals</label>
-                <input
-                  type="number"
-                  value={formData.number_of_meals || ''}
-                  onChange={(e) => setFormData({ ...formData, number_of_meals: parseInt(e.target.value) })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="0"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Original Cost (₹)</label>
-                <input
-                  type="number"
-                  value={formData.original_cost || ''}
-                  onChange={(e) => handlePriceChange('original_cost', parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="0"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Discounted Price (₹)</label>
-                <input
-                  type="number"
-                  value={formData.discounted_price || ''}
-                  onChange={(e) => handlePriceChange('discounted_price', parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="0"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Discount %</label>
-                <input
-                  type="number"
-                  value={formData.discount_percent || ''}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50"
-                  disabled
-                />
-              </div>
-            </div>
-            
-            {/* Image Upload */}
-            <div className="col-span-full mt-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Meal Plan Image</label>
-              <div className="flex items-center space-x-4">
-                {(imagePreview || formData.image_url) && (
-                  <img 
-                    src={imagePreview || formData.image_url} 
-                    alt="Preview" 
-                    className="h-24 w-24 object-cover rounded-lg"
-                  />
-                )}
-                <label className="cursor-pointer">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    disabled={uploadingImage}
-                  />
-                  <div className="flex items-center space-x-2 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 transition-colors">
-                    {uploadingImage ? (
-                      <RefreshCw className="h-5 w-5 animate-spin text-blue-500" />
-                    ) : (
-                      <Upload className="h-5 w-5 text-gray-500" />
-                    )}
-                    <span className="text-sm text-gray-600">
-                      {uploadingImage ? 'Uploading...' : 'Upload Image'}
-                    </span>
-                  </div>
-                </label>
-              </div>
-            </div>
-            
-            <div className="flex justify-end space-x-3 mt-4">
-              <button
-                onClick={handleCancel}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleAdd}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                Add Plan
-              </button>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Meal Plans Table */}
+        {/* Simplified Meal Plans Table */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -351,22 +186,19 @@ export default function MealPlansAdmin() {
                     Image
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Pack Name
+                    Plan Name
                   </th>
                   <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    No. of Meals
+                    Meals
                   </th>
                   <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Original Cost
+                    Price
                   </th>
                   <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Discounted Price
+                    Discount
                   </th>
                   <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Discount %
-                  </th>
-                  <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                    Type
                   </th>
                   <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
@@ -376,7 +208,7 @@ export default function MealPlansAdmin() {
               <tbody className="divide-y divide-gray-200">
                 {loading && (
                   <tr>
-                    <td colSpan={8} className="text-center py-8">
+                    <td colSpan={7} className="text-center py-8">
                       <div className="flex justify-center items-center space-x-2">
                         <RefreshCw className="h-5 w-5 animate-spin text-gray-500" />
                         <span className="text-gray-500">Loading meal plans...</span>
@@ -386,7 +218,7 @@ export default function MealPlansAdmin() {
                 )}
                 {!loading && mealPlans.map((plan) => (
                   <tr key={plan.id} className="hover:bg-gray-50 transition-colors">
-                    {/* Image Column */}
+                    {/* Image */}
                     <td className="px-4 py-4 text-center">
                       {plan.image_url ? (
                         <img 
@@ -400,145 +232,109 @@ export default function MealPlansAdmin() {
                         </div>
                       )}
                     </td>
-                    {/* Name Column */}
+                    
+                    {/* Name with Trial Badge */}
                     <td className="px-6 py-4">
-                      {editingId === plan.id ? (
-                        <input
-                          type="text"
-                          value={formData.name || ''}
-                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                      ) : (
-                        <div className="flex items-center">
-                          <Package className="h-5 w-5 text-blue-500 mr-2" />
-                          <div>
-                            <span className="text-sm font-medium text-gray-900">{plan.name}</span>
-                            {plan.is_trial && (
-                              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                                Trial
-                              </span>
-                            )}
-                          </div>
+                      <div className="flex items-center">
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">{plan.name}</div>
+                          {plan.is_trial ?  (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 mt-1">
+                              Trial
+                            </span>
+                          ) : ""}
                         </div>
-                      )}
+                      </div>
                     </td>
+                    
+                    {/* Number of Meals */}
                     <td className="px-6 py-4 text-center">
-                      {editingId === plan.id ? (
-                        <input
-                          type="number"
-                          value={formData.number_of_meals || ''}
-                          onChange={(e) => setFormData({ ...formData, number_of_meals: parseInt(e.target.value) })}
-                          className="w-20 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
-                        />
-                      ) : (
-                        <span className="text-sm text-gray-900">{plan.number_of_meals}</span>
-                      )}
+                      <span className="text-sm text-gray-900">{plan.number_of_meals}</span>
                     </td>
+                    
+                    {/* Price (showing discounted price) */}
                     <td className="px-6 py-4 text-center">
-                      {editingId === plan.id ? (
-                        <input
-                          type="number"
-                          value={formData.original_cost || ''}
-                          onChange={(e) => handlePriceChange('original_cost', parseInt(e.target.value))}
-                          className="w-24 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
-                        />
-                      ) : (
+                      <div>
                         <span className="text-sm text-gray-500 line-through">₹{plan.original_cost}</span>
-                      )}
+                        <div className="text-sm font-semibold text-green-600">₹{plan.discounted_price}</div>
+                      </div>
                     </td>
+                    
+                    {/* Discount */}
                     <td className="px-6 py-4 text-center">
-                      {editingId === plan.id ? (
-                        <input
-                          type="number"
-                          value={formData.discounted_price || ''}
-                          onChange={(e) => handlePriceChange('discounted_price', parseInt(e.target.value))}
-                          className="w-24 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
-                        />
-                      ) : (
-                        <span className="text-sm font-semibold text-green-600">₹{plan.discounted_price}</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      {editingId === plan.id ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          {formData.discount_percent}%
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          {plan.discount_percent}%
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        plan.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        {plan.is_active ? 'Active' : 'Inactive'}
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        {plan.discount_percent}% OFF
                       </span>
                     </td>
+                    
+                    {/* Type */}
                     <td className="px-6 py-4 text-center">
-                      {editingId === plan.id ? (
-                        <div className="flex items-center justify-center space-x-2">
-                          <button
-                            onClick={handleSave}
-                            className="text-green-600 hover:text-green-700"
-                          >
-                            <Save className="h-5 w-5" />
-                          </button>
-                          <button
-                            onClick={handleCancel}
-                            className="text-gray-600 hover:text-gray-700"
-                          >
-                            <X className="h-5 w-5" />
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-center space-x-2">
-                          <button
-                            onClick={() => handleEdit(plan)}
-                            className="text-blue-600 hover:text-blue-700"
-                          >
-                            <Edit2 className="h-5 w-5" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(plan.id)}
-                            className="text-red-600 hover:text-red-700"
-                          >
-                            <Trash2 className="h-5 w-5" />
-                          </button>
-                        </div>
-                      )}
+                      <div className="text-xs text-gray-600">
+                        {plan.meal_type && (
+                          <div className="capitalize">{plan.meal_type}</div>
+                        )}
+                        {plan.duration_days && (
+                          <div>{plan.duration_days} days</div>
+                        )}
+                      </div>
+                    </td>
+                    
+                    {/* Actions */}
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex items-center justify-center space-x-2">
+                        <button
+                          onClick={() => handleView(plan)}
+                          className="text-gray-600 hover:text-gray-700 transition-colors"
+                          title="View Details"
+                        >
+                          <Eye className="h-5 w-5" />
+                        </button>
+                        <button
+                          onClick={() => handleEdit(plan)}
+                          className="text-blue-600 hover:text-blue-700 transition-colors"
+                          title="Edit"
+                        >
+                          <Edit2 className="h-5 w-5" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(plan.id)}
+                          className="text-red-600 hover:text-red-700 transition-colors"
+                          title="Delete"
+                        >
+                          <Trash2 className="h-5 w-5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
+                {!loading && mealPlans.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="text-center py-8">
+                      <p className="text-gray-500">No meal plans found</p>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
         </motion.div>
 
-        {/* Sample Menu Button Note */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6"
-        >
-          <div className="flex items-start space-x-3">
-            <div className="flex-shrink-0">
-              <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <h3 className="text-sm font-medium text-blue-800">Sample Menu Button</h3>
-              <p className="mt-1 text-sm text-blue-700">
-                There would be a sample menu button that you can place at a convenient place on the main page or in the meals plans individually.
-              </p>
-            </div>
-          </div>
-        </motion.div>
+       
       </div>
+
+      {/* Meal Plan Modal */}
+      <MealPlanModal
+        isOpen={modalOpen}
+        onClose={() => {
+          setModalOpen(false);
+          setSelectedPlan(null);
+        }}
+        plan={selectedPlan}
+        mode={modalMode}
+        onSave={handleSave}
+        uploadingImage={uploadingImage}
+        onImageUpload={handleImageUpload}
+      />
     </div>
   );
 }

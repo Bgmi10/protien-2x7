@@ -14,9 +14,9 @@ app.use('*', logger());
 app.use('*', cors({
   origin: [
     'http://localhost:5173',
+    'http://localhost:5174',
     'https://protien-2x7.vercel.app',
     'https://app.tnkalyanavelai.com',
-    
   ],
   credentials: true, // This is crucial for cookies to work
   allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Set-Cookie'],

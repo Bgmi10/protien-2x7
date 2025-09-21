@@ -60,11 +60,12 @@ export default function Header() {
             </Link>
             
             {/* Divider */}
-            <div className="hidden sm:block h-8 lg:h-10 w-px bg-gray-300"></div>
+            <div className=" sm:block h-8 lg:h-10 w-px bg-gray-300"></div>
             
             {/* FSSAI Badge */}
-            <div className='hidden sm:flex flex-start flex-col'>
+            <div className=' sm:flex flex-start flex-col'>
               <div className=" sm:flex items-center space-x-2">
+              <div className="flex items-center">
                 <img 
                   src="https://imgs.search.brave.com/CHtRwHAuoj9Qc9W72lqhWwxiZADIZzErm8VCAogveoQ/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9zZWVr/dmVjdG9ycy5jb20v/c3RvcmFnZS9pbWFn/ZXMvRlNTQUklMjBM/T0dPLnN2Zw" 
                   alt="FSSAI" 
@@ -73,7 +74,7 @@ export default function Header() {
                     e.currentTarget.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Food_Safety_and_Standards_Authority_of_India_logo.png/640px-Food_Safety_and_Standards_Authority_of_India_logo.png";
                   }}
                 />
-                <div className="flex flex-col">
+                
                   <span className="text-[10px] lg:text-xs font-semibold text-gray-700 leading-tight">22225059000857</span>
                 </div>
               </div>

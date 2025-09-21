@@ -110,6 +110,25 @@ mealPlans.post('/admin/create', requireAdmin, async (c) => {
   // Calculate discount percentage
   const discount_percent = Math.round(((original_cost - discounted_price) / original_cost) * 100);
   
+  // Log the data being inserted
+  console.log('Creating meal plan with name:', name);
+  console.log('Type of name:', typeof name);
+  console.log('is_trial value:', is_trial, 'converted to:', is_trial === true ? 1 : 0);
+  console.log('All values being inserted:', {
+    name,
+    number_of_meals,
+    original_cost, 
+    discounted_price,
+    discount_percent,
+    duration_days: duration_days || null,
+    meal_type: meal_type || null,
+    plan_type: plan_type || 'individual',
+    is_trial: is_trial === true ? 1 : 0,
+    description: description || null,
+    created_by: user?.userId,
+    image_url: image_url || null
+  });
+  
   try {
     const result = await db.execute(
       `INSERT INTO meal_plans (
@@ -125,7 +144,7 @@ mealPlans.post('/admin/create', requireAdmin, async (c) => {
         duration_days || null,
         meal_type || null,
         plan_type || 'individual',
-        is_trial ? 1 : 0,
+        is_trial === true ? 1 : 0,  // More explicit check
         description || null,
         user?.userId,
         image_url || null
@@ -133,10 +152,16 @@ mealPlans.post('/admin/create', requireAdmin, async (c) => {
     );
     
     // Fetch the created plan
+    const planId = result.meta.last_row_id;
+    console.log('Fetching created plan with ID:', planId);
+    
     const plan = await db.queryOne<MealPlan>(
-      'SELECT * FROM meal_plans WHERE id = ?',
-      [result.meta.last_row_id]
+      'SELECT id, name, number_of_meals, original_cost, discounted_price, discount_percent, duration_days, meal_type, plan_type, is_trial, is_active, display_order, description, image_url, created_at, updated_at FROM meal_plans WHERE id = ?',
+      [planId]
     );
+    
+    console.log('Created plan name:', plan?.name);
+    console.log('Full created plan:', plan);
     
     return c.json({ success: true, data: plan }, 201);
   } catch (error) {
@@ -155,7 +180,7 @@ mealPlans.put('/admin/:id', requireAdmin, async (c) => {
   const allowedFields = [
     'name', 'number_of_meals', 'original_cost', 'discounted_price',
     'duration_days', 'meal_type', 'plan_type', 'is_trial', 
-    'is_active', 'display_order', 'description'
+    'is_active', 'display_order', 'description', 'image_url'
   ];
   
   const updateFields: string[] = [];
@@ -210,18 +235,18 @@ mealPlans.put('/admin/:id', requireAdmin, async (c) => {
 mealPlans.delete('/admin/:id', requireAdmin, async (c) => {
   const db = new DatabaseClient(c.env);
   const planId = c.req.param('id');
-  
+
   try {
-    // Soft delete by setting is_active to false
+    // Hard delete: completely remove the record
     const result = await db.execute(
-      'UPDATE meal_plans SET is_active = 0, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      'DELETE FROM meal_plans WHERE id = ?',
       [planId]
     );
-    
+
     if (result.meta.changes === 0) {
       return c.json({ success: false, error: 'Meal plan not found' }, 404);
     }
-    
+
     return c.json({ success: true, message: 'Meal plan deleted successfully' });
   } catch (error) {
     console.error('Error deleting meal plan:', error);

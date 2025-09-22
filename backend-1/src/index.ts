@@ -6,6 +6,7 @@ import users from './routes/users';
 import auth from './routes/auth';
 import mealPlans from './routes/meal-plans';
 import upload from './routes/upload';
+import sampleMenu from './routes/sample-menu';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -29,6 +30,7 @@ app.route('/api/v1/auth', auth);
 app.route('/api/v1/users', users);
 app.route('/api/v1/meal-plans', mealPlans);
 app.route('/api/v1/upload', upload);
+app.route('/api/v1/sample-menu', sampleMenu);
 
 // 404 handler
 app.notFound((c) => {

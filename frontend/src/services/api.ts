@@ -76,6 +76,62 @@ export const mealPlansApi = {
   },
 };
 
+// Sample Menu API
+export const sampleMenuApi = {
+  // Public endpoints
+  async getAll() {
+    const response = await fetchWithCredentials('/api/v1/sample-menu');
+    return response.json();
+  },
+
+  async getById(id: number) {
+    const response = await fetchWithCredentials(`/api/v1/sample-menu/${id}`);
+    return response.json();
+  },
+
+  // Admin endpoints
+  async getAllAdmin() {
+    const response = await fetchWithCredentials('/api/v1/sample-menu/admin/all');
+    return response.json();
+  },
+
+  async create(data: any) {
+    const response = await fetchWithCredentials('/api/v1/sample-menu/admin/create', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  },
+
+  async update(id: number, data: any) {
+    const response = await fetchWithCredentials(`/api/v1/sample-menu/admin/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  },
+
+  async delete(id: number) {
+    const response = await fetchWithCredentials(`/api/v1/sample-menu/admin/${id}`, {
+      method: 'DELETE',
+    });
+    return response.json();
+  },
+
+  async reorder(orders: Array<{ id: number; display_order: number }>) {
+    const response = await fetchWithCredentials('/api/v1/sample-menu/admin/reorder', {
+      method: 'POST',
+      body: JSON.stringify({ orders }),
+    });
+    return response.json();
+  },
+
+  async getStats() {
+    const response = await fetchWithCredentials('/api/v1/sample-menu/admin/stats');
+    return response.json();
+  },
+};
+
 // Upload API
 export const uploadApi = {
   async uploadImage(file: File) {

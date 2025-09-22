@@ -1,0 +1,30 @@
+name = "my-app"
+main = "src/index.ts"
+compatibility_date = "2025-09-03"
+account_id = "b1549a593a6363602d47f976b590f779"
+workers_dev = true
+
+# Worker configuration
+[vars]
+ENVIRONMENT = "production"
+API_VERSION = "v1"
+JWT_SECRET = "your-super-secret-jwt-key-change-in-production-2024"
+R2_PUBLIC_URL = "https://pub-f796d10fd72f439682a995f05e97cda9.r2.dev"
+
+# D1 Database configuration
+[[d1_databases]]    
+binding = "DB"
+database_name = "demo-1"
+database_id = "b5993378-62b5-43d7-918b-bd60dc74a71a"
+preview_database_id = "b5993378-62b5-43d7-918b-bd60dc74a71a"
+
+# R2 bucket configuration
+[[r2_buckets]]
+binding = "bucket_name"   
+bucket_name = "demo"
+preview_bucket_name = "demo"
+
+# Observability
+[observability]
+enabled = true
+head_sampling_rate = 1

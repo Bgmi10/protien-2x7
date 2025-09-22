@@ -15,6 +15,7 @@ import Contact from './pages/Contact';
 import ShippingPolicy from './pages/ShippingPolicy';
 import ReturnPolicy from './pages/ReturnPolicy';
 import MealPlansAdmin from './pages/admin/MealPlansAdmin';
+import SampleMenuAdmin from './pages/admin/SampleMenuAdmin';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminProfile from './pages/admin/AdminProfile';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
@@ -44,6 +45,7 @@ function App() {
           <Route path="/admin" element={<AdminProtectedRoute />}>
             <Route path="profile" element={<AdminProfile />} />
             <Route path="meal-plans" element={<MealPlansAdmin />} />
+            <Route path="sample-menu" element={<SampleMenuAdmin />} />
           </Route>
 
         </Routes>

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Users, ShoppingCart, Package, TrendingUp, Calendar, DollarSign } from 'lucide-react';
+import { Users, ShoppingCart, Package, TrendingUp, Calendar, DollarSign, UtensilsCrossed } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import ProfileDropdown from '../../components/admin/ProfileDropdown';
@@ -78,7 +78,7 @@ export default function AdminProfile() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
         >
           <button
             onClick={() => navigate('/admin/meal-plans')}
@@ -87,6 +87,15 @@ export default function AdminProfile() {
             <Package className="h-12 w-12 mb-4 mx-auto group-hover:scale-110 transition-transform" />
             <span className="block text-lg">Manage Meal Plans</span>
             <span className="block text-sm text-gray-500 mt-2">Add, edit, or remove meal plans</span>
+          </button>
+          
+          <button
+            onClick={() => navigate('/admin/sample-menu')}
+            className="bg-white hover:bg-gray-50 border-2 border-orange-500 text-orange-600 p-8 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 group"
+          >
+            <UtensilsCrossed className="h-12 w-12 mb-4 mx-auto group-hover:scale-110 transition-transform" />
+            <span className="block text-lg">Sample Menu</span>
+            <span className="block text-sm text-gray-500 mt-2">Manage sample menu dishes</span>
           </button>
           
           <button

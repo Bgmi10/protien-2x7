@@ -62,7 +62,7 @@ auth.post('/login', async (c) => {
     const isValidPassword = await bcrypt.compare(password, user.password_hash);
     
     if (!isValidPassword) {
-      return c.json({ success: false, error: 'Invalid credentials' }, 401);
+      return c.json({ success: false, error: 'Invalid credentials' }, 402);
     }
     
     // Generate tokens

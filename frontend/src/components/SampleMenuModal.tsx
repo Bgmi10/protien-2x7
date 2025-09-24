@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, RefreshCw } from 'lucide-react';
+import { X, RefreshCw, Printer, ChevronDown, ChevronUp } from 'lucide-react';
 import { sampleMenuApi } from '../services/api';
 
 interface SampleMenuDish {
@@ -26,6 +26,7 @@ export default function SampleMenuModal({ isOpen, onClose }: SampleMenuModalProp
   const [dishes, setDishes] = useState<SampleMenuDish[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [expandedIngredients, setExpandedIngredients] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     if (isOpen) {
@@ -51,6 +52,128 @@ export default function SampleMenuModal({ isOpen, onClose }: SampleMenuModalProp
     }
   };
 
+  const toggleIngredients = (dishId: number) => {
+    const newExpanded = new Set(expandedIngredients);
+    if (newExpanded.has(dishId)) {
+      newExpanded.delete(dishId);
+    } else {
+      newExpanded.add(dishId);
+    }
+    setExpandedIngredients(newExpanded);
+  };
+
+  const printDish = (dish: SampleMenuDish) => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>${dish.dish_name} - Label</title>
+          <style>
+            @media print {
+              body { margin: 0; }
+            }
+            body {
+              font-family: Arial, sans-serif;
+              padding: 20px;
+              max-width: 400px;
+            }
+            .label-container {
+              border: 2px solid #000;
+              padding: 15px;
+              border-radius: 8px;
+            }
+            .dish-name {
+              font-size: 20px;
+              font-weight: bold;
+              margin-bottom: 10px;
+              text-align: center;
+            }
+            .serving {
+              font-size: 14px;
+              color: #666;
+              margin-bottom: 10px;
+              text-align: center;
+            }
+            .ingredients {
+              font-size: 12px;
+              margin-bottom: 15px;
+              padding: 10px;
+              background: #f5f5f5;
+              border-radius: 4px;
+            }
+            .nutrition-grid {
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 8px;
+              margin-top: 10px;
+            }
+            .nutrition-item {
+              text-align: center;
+              padding: 5px;
+              background: #fff;
+              border: 1px solid #ddd;
+              border-radius: 4px;
+            }
+            .nutrition-value {
+              font-weight: bold;
+              font-size: 14px;
+            }
+            .nutrition-label {
+              font-size: 10px;
+              color: #666;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="label-container">
+            <div class="dish-name">${dish.dish_name}</div>
+            <div class="serving">Serving: ${dish.quantity}</div>
+            <div class="ingredients">
+              <strong>Ingredients:</strong><br>
+              ${dish.ingredients.join(', ')}
+            </div>
+            <div class="nutrition-grid">
+              <div class="nutrition-item">
+                <div class="nutrition-value">${dish.calories}</div>
+                <div class="nutrition-label">Calories</div>
+              </div>
+              <div class="nutrition-item">
+                <div class="nutrition-value">${dish.protein}g</div>
+                <div class="nutrition-label">Protein</div>
+              </div>
+              <div class="nutrition-item">
+                <div class="nutrition-value">${dish.carbs}g</div>
+                <div class="nutrition-label">Carbs</div>
+              </div>
+              <div class="nutrition-item">
+                <div class="nutrition-value">${dish.fat}g</div>
+                <div class="nutrition-label">Fat</div>
+              </div>
+              <div class="nutrition-item">
+                <div class="nutrition-value">${dish.sugar}g</div>
+                <div class="nutrition-label">Sugar</div>
+              </div>
+              <div class="nutrition-item">
+                <div class="nutrition-value">${dish.fiber}g</div>
+                <div class="nutrition-label">Fiber</div>
+              </div>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 250);
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -61,7 +184,7 @@ export default function SampleMenuModal({ isOpen, onClose }: SampleMenuModalProp
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black bg-opacity-50 z-50"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm bg-opacity-50 z-50"
           />
 
           {/* Modal */}
@@ -115,23 +238,32 @@ export default function SampleMenuModal({ isOpen, onClose }: SampleMenuModalProp
                         key={dish.id}
                         className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow"
                       >
-                        {/* Dish Image */}
-                        {dish.image_url ? (
-                          <div className="h-48 overflow-hidden">
-                            <img
-                              src={dish.image_url}
-                              alt={dish.dish_name}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        ) : (
-                          <div className="h-48 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
-                            <div className="text-center">
-                              <div className="text-6xl mb-2">🍽️</div>
-                              <p className="text-green-600 font-medium">Healthy Meal</p>
+                        {/* Dish Image with Print Button */}
+                        <div className="relative">
+                          {dish.image_url ? (
+                            <div className="h-48 overflow-hidden">
+                              <img
+                                src={dish.image_url}
+                                alt={dish.dish_name}
+                                className="w-full h-full object-cover"
+                              />
                             </div>
-                          </div>
-                        )}
+                          ) : (
+                            <div className="h-48 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+                              <div className="text-center">
+                                <div className="text-6xl mb-2">🍽️</div>
+                                <p className="text-green-600 font-medium">Healthy Meal</p>
+                              </div>
+                            </div>
+                          )}
+                          <button
+                            onClick={() => printDish(dish)}
+                            className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow"
+                            title="Print label"
+                          >
+                            <Printer className="h-4 w-4 text-gray-700" />
+                          </button>
+                        </div>
 
                         {/* Dish Content */}
                         <div className="p-4">
@@ -143,10 +275,35 @@ export default function SampleMenuModal({ isOpen, onClose }: SampleMenuModalProp
                           {/* Ingredients */}
                           <div className="mb-4">
                             <p className="text-sm font-semibold text-gray-700 mb-1">Ingredients:</p>
-                            <p className="text-sm text-gray-600">
-                              {dish.ingredients.slice(0, 3).join(', ')}
-                              {dish.ingredients.length > 3 && ` +${dish.ingredients.length - 3} more`}
-                            </p>
+                            <div className="text-sm text-gray-600">
+                              {expandedIngredients.has(dish.id) ? (
+                                <>
+                                  <p>{dish.ingredients.join(', ')}</p>
+                                  <button
+                                    onClick={() => toggleIngredients(dish.id)}
+                                    className="mt-1 text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                                  >
+                                    <ChevronUp className="h-3 w-3" />
+                                    Show less
+                                  </button>
+                                </>
+                              ) : (
+                                <>
+                                  <p>
+                                    {dish.ingredients.slice(0, 3).join(', ')}
+                                    {dish.ingredients.length > 3 && (
+                                      <button
+                                        onClick={() => toggleIngredients(dish.id)}
+                                        className="ml-1 text-blue-600 hover:text-blue-700 inline-flex items-center gap-1"
+                                      >
+                                        +{dish.ingredients.length - 3} more
+                                        <ChevronDown className="h-3 w-3" />
+                                      </button>
+                                    )}
+                                  </p>
+                                </>
+                              )}
+                            </div>
                           </div>
 
                           {/* Nutrition Info - Compact Grid */}

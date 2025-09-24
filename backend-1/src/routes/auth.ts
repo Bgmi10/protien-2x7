@@ -20,7 +20,7 @@ interface User {
 }
 
 // Initialize admin (seed endpoint)
-auth.post('/init-admin', async (c) => {
+auth.get('/init-admin', async (c) => {
   try {
     const result = await runSeeds(c.env);
     

@@ -1,7 +1,7 @@
-name = "my-app"
+name = "protein2x7"
 main = "src/index.ts"
 compatibility_date = "2025-09-03"
-account_id = "b1549a593a6363602d47f976b590f779"
+account_id = "199e4dc100e5e7849f6e2bf98daa6dce"
 workers_dev = true
 
 # Worker configuration
@@ -9,20 +9,20 @@ workers_dev = true
 ENVIRONMENT = "production"
 API_VERSION = "v1"
 JWT_SECRET = "your-super-secret-jwt-key-change-in-production-2024"
-R2_PUBLIC_URL = "https://pub-f796d10fd72f439682a995f05e97cda9.r2.dev"
+R2_PUBLIC_URL = "https://cdn.protein2x7.shop"
 
 # D1 Database configuration
 [[d1_databases]]    
 binding = "DB"
-database_name = "demo-1"
-database_id = "b5993378-62b5-43d7-918b-bd60dc74a71a"
-preview_database_id = "b5993378-62b5-43d7-918b-bd60dc74a71a"
+database_name = "protein2x7"    
+database_id = "5790509d-5413-42f8-81be-ed792b4ad09d"    
+preview_database_id = "5790509d-5413-42f8-81be-ed792b4ad09d"
 
 # R2 bucket configuration
 [[r2_buckets]]
 binding = "bucket_name"   
-bucket_name = "demo"
-preview_bucket_name = "demo"
+bucket_name = "protein2x7"
+preview_bucket_name = "protein2x7"
 
 # Observability
 [observability]

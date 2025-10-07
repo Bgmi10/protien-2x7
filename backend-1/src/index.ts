@@ -16,7 +16,7 @@ app.use('*', cors({
   origin: [
     'http://localhost:5173',
     'http://localhost:5174',
-    'protein2x7.shop'
+    'https://protein2x7.shop'
   ],
   credentials: true, // This is crucial for cookies to work
   allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Set-Cookie'],

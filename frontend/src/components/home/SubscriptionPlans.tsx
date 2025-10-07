@@ -1,19 +1,40 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowRight, Check, Star, BookOpen } from 'lucide-react';
-import { subscriptionPlans } from '../../utils/constants';
+import { mealPlansApi } from '../../services/api';
 import SampleMenuModal from '../SampleMenuModal';
+import type { Plan } from '../../types';
 
 export default function SubscriptionPlans() {
   const [showSampleMenu, setShowSampleMenu] = useState(false);
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [loading, setLoading] = useState(true);
   
   const colorMap = {
-    blue: 'from-blue-500 to-blue-700',
-    green: 'from-green-500 to-green-700',
-    red: 'from-red-500 to-red-700',
-    purple: 'from-purple-500 to-purple-700',
+    0: 'from-blue-500 to-blue-700',
+    1: 'from-green-500 to-green-700', 
+    2: 'from-red-500 to-red-700',
+    3: 'from-purple-500 to-purple-700',
   };
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        setLoading(true);
+        const response = await mealPlansApi.getAll();
+        if (response.success) {
+          setPlans(response.data.slice(0, 4)); // Show first 4 plans
+        }
+      } catch (error) {
+        console.error('Error fetching plans:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPlans();
+  }, []);
 
   return (
     <section className="py-8 sm:py-16 lg:py-20 bg-gray-50">
@@ -45,8 +66,13 @@ export default function SubscriptionPlans() {
         </motion.div>
 
         {/* Plans Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8 mb-6 sm:mb-10 lg:mb-12">
-          {subscriptionPlans.map((plan, index) => (
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8 mb-6 sm:mb-10 lg:mb-12">
+            {plans.map((plan, index) => (
             <motion.div
               key={plan.id}
               initial={{ opacity: 0, y: 50 }}
@@ -57,70 +83,95 @@ export default function SubscriptionPlans() {
             >
               <div className="bg-white rounded-lg sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden h-full">
                 {/* Plan Image */}
-                <div className="relative h-24 sm:h-36 lg:h-48 overflow-hidden">
-                  <img
-                    src={plan.image}
-                    alt={plan.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className={`absolute inset-0 bg-gradient-to-t ${colorMap[plan.color as keyof typeof colorMap]} opacity-80`}></div>
+                <div className="relative h-20 sm:h-32 lg:h-40 overflow-hidden">
+                  {plan.image_url ? (
+                    <img
+                      src={plan.image_url}
+                      alt={plan.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  ) : null}
+                  <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center" style={{display: plan.image_url ? 'none' : 'flex'}}>
+                    <div className="text-2xl sm:text-3xl lg:text-4xl">🍽️</div>
+                  </div>
+                  <div className={`absolute inset-0 bg-gradient-to-t ${
+                    //@ts-ignore
+                    colorMap[index % 4]} opacity-75`}></div>
                   
                   {/* Most Popular Badge */}
                   {index === 0 && (
-                    <div className="absolute top-1 right-1 sm:top-3 sm:right-3 lg:top-4 lg:right-4 bg-yellow-500 text-white px-1 py-0.5 sm:px-2 sm:py-1 lg:px-3 lg:py-1 rounded-full text-xs sm:text-xs lg:text-sm font-semibold flex items-center space-x-0.5 sm:space-x-1">
-                      <Star className="h-2 w-2 sm:h-3 sm:w-3 lg:h-4 lg:w-4" fill="currentColor" />
-                      <span className="hidden sm:inline">Most Popular</span>
-                      <span className="sm:hidden">Popular</span>
+                    <div className="absolute top-1 right-1 sm:top-2 sm:right-2 bg-yellow-500 text-white px-1 py-0.5 sm:px-2 sm:py-1 rounded-full text-xs font-semibold flex items-center space-x-0.5">
+                      <Star className="h-2 w-2 sm:h-3 sm:w-3" fill="currentColor" />
+                      <span className="hidden sm:inline text-xs">Popular</span>
+                      <span className="sm:hidden">★</span>
                     </div>
                   )}
 
                   {/* Plan Title */}
-                  <div className="absolute bottom-1 left-1 sm:bottom-3 sm:left-3 lg:bottom-4 lg:left-4 text-white">
-                    <h3 className="text-xs sm:text-base lg:text-xl font-bold">{plan.name}</h3>
-                    <p className="text-xs sm:text-xs lg:text-sm opacity-90">{plan.tagline}</p>
+                  <div className="absolute bottom-1 left-1 sm:bottom-2 sm:left-2 text-white">
+                    <h3 className="text-xs sm:text-sm lg:text-base font-bold leading-tight">{plan.name}</h3>
+                    <p className="text-xs opacity-90 leading-tight">{plan.number_of_meals} meals • {plan.duration_days} days</p>
                   </div>
                 </div>
 
                 {/* Plan Content */}
-                <div className="p-2 sm:p-4 lg:p-6">
-                  <p className="text-xs sm:text-sm lg:text-base text-gray-600 mb-2 sm:mb-3 lg:mb-4">{plan.description}</p>
+                <div className="p-2 sm:p-3">
+                  {plan.description && (
+                    <p className="text-xs text-gray-600 mb-2 line-clamp-2">{plan.description}</p>
+                  )}
 
                   {/* Pricing */}
-                  <div className="mb-2 sm:mb-3 lg:mb-4">
-                    <div className="flex items-baseline space-x-0.5 sm:space-x-1">
-                      <span className="text-sm sm:text-2xl lg:text-3xl font-bold text-gray-900">
-                        ₹{plan.pricing.monthly}
+                  <div className="mb-2">
+                    <div className="flex items-baseline space-x-1">
+                      {plan.discount_percent > 0 && (
+                        <span className="text-xs text-gray-400 line-through">
+                          ₹{plan.original_cost}
+                        </span>
+                      )}
+                      <span className="text-lg sm:text-xl font-bold text-gray-900">
+                        ₹{plan.discounted_price}
                       </span>
-                      <span className="text-xs sm:text-sm lg:text-base text-gray-500">/month</span>
                     </div>
-                    <p className="text-xs sm:text-xs lg:text-sm text-green-600 font-medium">
-                      Save up to 20% on longer plans
+                    <p className="text-xs text-green-600 font-medium">
+                      {plan.discount_percent > 0 ? `${plan.discount_percent}% OFF` : 'Best Value'}
                     </p>
                   </div>
 
                   {/* Benefits */}
-                  <div className="mb-3 sm:mb-4 lg:mb-6">
-                    {plan.benefits.slice(0, 3).map((benefit, i) => (
-                      <div key={i} className="flex items-center space-x-1 sm:space-x-2 mb-1 sm:mb-1.5 lg:mb-2">
-                        <Check className="h-2 w-2 sm:h-3 sm:w-3 lg:h-4 lg:w-4 text-green-500 flex-shrink-0" />
-                        <span className="text-xs sm:text-xs lg:text-sm text-gray-700">{benefit}</span>
-                      </div>
-                    ))}
+                  <div className="mb-2">
+                    <div className="flex items-center space-x-1 mb-1">
+                      <Check className="h-3 w-3 text-green-500 flex-shrink-0" />
+                      <span className="text-xs text-gray-700">{plan.number_of_meals} {plan.meal_type} meals</span>
+                    </div>
+                    <div className="flex items-center space-x-1 mb-1">
+                      <Check className="h-3 w-3 text-green-500 flex-shrink-0" />
+                      <span className="text-xs text-gray-700">{plan.duration_days} days duration</span>
+                    </div>
+                    <div className="flex items-center space-x-1 mb-1">
+                      <Check className="h-3 w-3 text-green-500 flex-shrink-0" />
+                      <span className="text-xs text-gray-700">Free delivery</span>
+                    </div>
                   </div>
 
                   {/* CTA Button */}
                   <Link
                     to={`/subscription-plans/${plan.id}`}
-                    className={`w-full bg-gradient-to-r ${colorMap[plan.color as keyof typeof colorMap]} text-white py-1.5 sm:py-2 lg:py-3 rounded-md sm:rounded-lg font-semibold flex items-center justify-center space-x-1 sm:space-x-2 hover:shadow-lg transition-all duration-300 group`}
+                    className={`w-full bg-gradient-to-r ${
+                      //@ts-ignore
+                      colorMap[index % 4]} text-white py-2 rounded-md font-semibold flex items-center justify-center space-x-1 hover:shadow-lg transition-all duration-300 group`}
                   >
-                    <span className="text-xs sm:text-sm lg:text-base">View Details</span>
-                    <ArrowRight className="h-2 w-2 sm:h-3 sm:w-3 lg:h-4 lg:w-4 group-hover:translate-x-1 transition-transform" />
+                    <span className="text-xs">View Details</span>
+                    <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
               </div>
             </motion.div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* View All Plans CTA */}
         <motion.div

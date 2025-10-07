@@ -28,7 +28,7 @@ export const mealPlansApi = {
     return response.json();
   },
 
-  async getById(id: number) {
+  async getById(id: string | undefined) {
     const response = await fetchWithCredentials(`/api/v1/meal-plans/${id}`);
     return response.json();
   },

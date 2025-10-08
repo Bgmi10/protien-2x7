@@ -1,10 +1,15 @@
 import { useState } from 'react';
-import { createOrder } from '../api';
 import { baseUrl } from '../config/config';
-import { type Product } from '../utils/constants';
 
 interface CheckoutFormProps {
-  product: Product;
+  product: {
+    id: number;
+    name: string;
+    price: number;
+    image: string;
+    description: string;
+    weight: string;
+  };
   onClose: () => void;
 }
 
@@ -43,15 +48,27 @@ export default function CheckoutForm({ product, onClose }: CheckoutFormProps) {
     setLoading(true);
 
     try {
-      // Create order with customer details
-      const orderData = await createOrder({
-        amount: product.price,
-        currency: 'INR',
-        receipt: `receipt_${product.id}_${Date.now()}`,
-        customerEmail: customerDetails.email,
-        customerName: customerDetails.name,
-        products: [product.name]
+      // Create order with meal plan ID
+      const orderResponse = await fetch(baseUrl + '/api/v1/orders/create-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          receipt: `receipt_${product.id}_${Date.now()}`,
+          customerEmail: customerDetails.email,
+          customerName: customerDetails.name,
+          customerPhone: customerDetails.phone,
+          deliveryAddress: customerDetails.address,
+          mealPlanId: product.id
+        })
       });
+
+      const orderData = await orderResponse.json();
+
+      if (!orderData.success) {
+        throw new Error(orderData.error || 'Order creation failed');
+      }
 
       const options = {
         key: orderData.key_id,
@@ -63,7 +80,7 @@ export default function CheckoutForm({ product, onClose }: CheckoutFormProps) {
         handler: async function (response: any) {
           // Payment successful - verify and send email
           try {
-            await fetch(baseUrl + '/api/v1/verify-payment', {
+            await fetch(baseUrl + '/api/v1/orders/verify-payment', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

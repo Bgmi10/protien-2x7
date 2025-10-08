@@ -1,6 +1,7 @@
 name = "protein2x7"
 main = "src/index.ts"
 compatibility_date = "2025-09-03"
+compatibility_flags = ["nodejs_compat"]
 account_id = "199e4dc100e5e7849f6e2bf98daa6dce"
 workers_dev = true
 
@@ -10,6 +11,11 @@ ENVIRONMENT = "production"
 API_VERSION = "v1"
 JWT_SECRET = "your-super-secret-jwt-key-change-in-production-2024"
 R2_PUBLIC_URL = "https://cdn.protein2x7.shop"
+BREVO_SENDER_EMAIL="ciao@latorre.farm"
+BREVO_API_KEY="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"
+RAZORPAY_WEBHOOK_SECRET="kajsdkasjjear"
+RAZORPAY_KEY_ID="rzp_test_RArZv0NT0yRPCY"
+RAZORPAY_KEY_SECRET="n73BdqHXKfVMMynkW7iTlXOz"
 
 # D1 Database configuration
 [[d1_databases]]    
